@@ -18,11 +18,11 @@
     }
 
     .receipt {
-      max-width: 320px;
-      width: 95vw;
-      margin: 10px auto;
+      width: 100vw;
+      max-width: 100%;
+      margin: 0 auto;
       padding: 12px;
-      font-size: 3.5vw;
+      font-size: clamp(13px, 4vw, 18px);
       border: 1px dashed #000;
       background-color: #fff;
     }
@@ -33,73 +33,71 @@
       margin-bottom: 5px;
       border-bottom: 1px solid #000;
       padding-bottom: 5px;
-      font-size: 4vw;
+      font-size: clamp(14px, 4.5vw, 20px);
     }
 
     .info {
-      margin-bottom: 6px;
-      font-size: 3.4vw;
-      line-height: 1.4;
+      margin-bottom: 8px;
+      font-size: clamp(13px, 3.8vw, 17px);
+      line-height: 1.5;
     }
 
     .section-title {
       font-weight: bold;
-      margin-top: 10px;
-      margin-bottom: 4px;
+      margin-top: 12px;
+      margin-bottom: 6px;
       border-bottom: 1px solid #000;
-      font-size: 3.6vw;
+      font-size: clamp(13px, 4vw, 18px);
     }
 
     .item {
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       border-bottom: 1px dotted #000;
       padding-bottom: 6px;
     }
 
     .item-name {
       font-weight: bold;
-      font-size: 4vw;
+      font-size: clamp(14px, 4.8vw, 20px);
     }
 
     .item-line {
       display: flex;
       justify-content: space-between;
-      font-size: 3.8vw;
+      font-size: clamp(13px, 4.2vw, 18px);
       font-weight: bold;
     }
 
     .totals {
-      margin-top: 12px;
+      margin-top: 14px;
       border-top: 1px dashed #000;
       padding-top: 10px;
-      font-size: 3.8vw;
+      font-size: clamp(13px, 4.2vw, 18px);
       font-weight: bold;
       line-height: 1.6;
     }
 
     .footer {
       text-align: center;
-      margin-top: 10px;
-      font-size: 3.6vw;
+      margin-top: 12px;
+      font-size: clamp(13px, 4vw, 17px);
       border-top: 1px solid #000;
       padding-top: 6px;
     }
 
     @media print {
       .receipt {
-        font-size: 13px;
         width: 300px;
+        font-size: 12px;
         padding: 10px;
       }
 
       .item-name {
         font-size: 14px;
-        font-weight: bold;
       }
 
       .item-line {
-        font-size: 13px;
-        font-weight: bold;
+        font-size: 12px;
       }
     }
   </style>
@@ -112,23 +110,15 @@
     0765588995
   </div>
 
-  <div class="info" id="billInfo">
-    <!-- බිල info load වෙයි -->
-  </div>
+  <div class="info" id="billInfo"></div>
 
   <div class="section-title">බිල් අයිතම</div>
-  <div id="billItemsGrid">
-    <!-- අයිතම layout එක මෙතන -->
-  </div>
+  <div id="billItemsGrid"></div>
 
   <div class="section-title" id="returnSectionTitle" style="display:none;">ආපසු අයිතම</div>
-  <div id="returnItemsGrid">
-    <!-- ආපසු අයිතම මෙතන -->
-  </div>
+  <div id="returnItemsGrid"></div>
 
-  <div class="totals" id="billTotals">
-    <!-- මුළු ගණන් -->
-  </div>
+  <div class="totals" id="billTotals"></div>
 
   <div class="footer">ස්තුතියි! නැවත පැමිණෙන්න</div>
 </div>
@@ -145,13 +135,13 @@
     const storeName = store?.storeName || store?.name || 'අදාල කඩය';
     const date = new Date(latest.date).toLocaleDateString('si-LK');
 
-    // Info section
+    // Info
     document.getElementById('billInfo').innerHTML = `
       කඩය: <b>${storeName}</b><br>
       දිනය: ${date}
     `;
 
-    // Items layout
+    // Items
     const billItemsGrid = document.getElementById('billItemsGrid');
     latest.items.forEach(i => {
       const itemDiv = document.createElement('div');
@@ -166,7 +156,7 @@
       billItemsGrid.appendChild(itemDiv);
     });
 
-    // Return items
+    // Returns
     if (latest.returns?.length > 0) {
       document.getElementById('returnSectionTitle').style.display = 'block';
       const returnItemsGrid = document.getElementById('returnItemsGrid');
