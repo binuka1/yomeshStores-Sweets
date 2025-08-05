@@ -2,74 +2,105 @@
 <html lang="si">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>බිල්පත</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: 'Segoe UI', Tahoma, sans-serif;
-      background-color: #f9f9f9;
-      padding: 0px;
-      color: #333;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #fff;
+      color: #000;
     }
 
     .receipt {
-      max-width: 720px;
+      max-width: 320px;
       width: 95vw;
-      margin: 20px auto;
-      background: #fff;
-      border-radius: 16px;
-      padding: 20px;
-      box-shadow: 0 10px 40px rgba(0, 105, 192, 0.2);
-      overflow-x: auto;
-      box-sizing: border-box;
+      margin: 10px auto;
+      padding: 12px;
+      font-size: 3.5vw;
+      border: 1px dashed #000;
+      background-color: #fff;
     }
 
     .header {
       text-align: center;
-      margin-bottom: 10px;
-    }
-
-    .header h2 {
-      margin: 0;
-    }
-
-    .header small {
-      color: #777;
+      font-weight: bold;
+      margin-bottom: 5px;
+      border-bottom: 1px solid #000;
+      padding-bottom: 5px;
+      font-size: 4vw;
     }
 
     .info {
-      margin: 20px 0;
-      font-size: 0.95rem;
+      margin-bottom: 6px;
+      font-size: 3.4vw;
+      line-height: 1.4;
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
+    .section-title {
+      font-weight: bold;
       margin-top: 10px;
-      font-size: 0.95rem;
+      margin-bottom: 4px;
+      border-bottom: 1px solid #000;
+      font-size: 3.6vw;
     }
 
-    th, td {
-      border: 1px solid #ccc;
-      padding: 8px;
-      text-align: center;
+    .item {
+      margin-bottom: 10px;
+      border-bottom: 1px dotted #000;
+      padding-bottom: 6px;
     }
 
-    th {
-      background-color: #e0f0ff;
+    .item-name {
+      font-weight: bold;
+      font-size: 4vw;
+    }
+
+    .item-line {
+      display: flex;
+      justify-content: space-between;
+      font-size: 3.8vw;
+      font-weight: bold;
     }
 
     .totals {
-      margin-top: 20px;
+      margin-top: 12px;
+      border-top: 1px dashed #000;
+      padding-top: 10px;
+      font-size: 3.8vw;
       font-weight: bold;
-      font-size: 1.05rem;
+      line-height: 1.6;
     }
 
     .footer {
-      margin-top: 10px;
       text-align: center;
-      color: #888;
-      font-size: 0.9rem;
+      margin-top: 10px;
+      font-size: 3.6vw;
+      border-top: 1px solid #000;
+      padding-top: 6px;
+    }
+
+    @media print {
+      .receipt {
+        font-size: 13px;
+        width: 300px;
+        padding: 10px;
+      }
+
+      .item-name {
+        font-size: 14px;
+        font-weight: bold;
+      }
+
+      .item-line {
+        font-size: 13px;
+        font-weight: bold;
+      }
     }
   </style>
 </head>
@@ -77,29 +108,29 @@
 
 <div class="receipt">
   <div class="header">
-    <h2>Yomesh Stores</h2>
-    <small>0765588995</small>
+    Yomesh Stores<br>
+    0765588995
   </div>
 
   <div class="info" id="billInfo">
     <!-- බිල info load වෙයි -->
   </div>
 
-  <div id="billItemsSection">
-    <!-- අයිතම Table එක load වෙයි -->
+  <div class="section-title">බිල් අයිතම</div>
+  <div id="billItemsGrid">
+    <!-- අයිතම layout එක මෙතන -->
   </div>
 
-  <div id="returnItemsSection">
-    <!-- ආපසු Table එක load වෙයි -->
+  <div class="section-title" id="returnSectionTitle" style="display:none;">ආපසු අයිතම</div>
+  <div id="returnItemsGrid">
+    <!-- ආපසු අයිතම මෙතන -->
   </div>
 
   <div class="totals" id="billTotals">
-    <!-- මුළු ගණන් load වෙයි -->
+    <!-- මුළු ගණන් -->
   </div>
 
-  <div class="footer">
-  <h2>ස්තුතියි!</h2>
-  </div>
+  <div class="footer">ස්තුතියි! නැවත පැමිණෙන්න</div>
 </div>
 
 <script>
@@ -114,55 +145,50 @@
     const storeName = store?.storeName || store?.name || 'අදාල කඩය';
     const date = new Date(latest.date).toLocaleDateString('si-LK');
 
-    // බිල info
+    // Info section
     document.getElementById('billInfo').innerHTML = `
-      <p>🛒 කඩයේ නම:<b> ${storeName}</b></p>
-      <p><b>දිනය: ${date}</b></p>
+      කඩය: <b>${storeName}</b><br>
+      දිනය: ${date}
     `;
 
-    // අයිතම Table
-    let itemRows = latest.items.map(i => `
-      <tr>
-        <td>${i.name}</td>
-        <td>${i.qty}</td>
-        <td>Rs. ${i.price.toFixed(2)}</td>
-        <td>Rs. ${(i.qty * i.price).toFixed(2)}</td>
-      </tr>
-    `).join('');
-
-    document.getElementById('billItemsSection').innerHTML = `
-      <h3>🧾 බිල් අයිතම</h3>
-      <table>
-        <thead>
-          <tr><th>නිෂ්පාදනය</th><th>ප්‍රමාණය</th><th>මිල</th><th>මුළු මුදල</th></tr>
-        </thead>
-        <tbody>${itemRows}</tbody>
-      </table>
-    `;
-
-    // ආපසු Table (අත්‍යවශ්‍ය නම්)
-    if (latest.returns?.length > 0) {
-      let returnRows = latest.returns.map(r => `
-        <tr>
-          <td>${r.name}</td>
-          <td>Rs. ${r.returnPrice.toFixed(2)}</td>
-        </tr>
-      `).join('');
-
-      document.getElementById('returnItemsSection').innerHTML = `
-        <h3>🔁 ආපසු අයිතම</h3>
-        <table>
-          <thead><tr><th>අයිතමය</th><th>වටිනාකම</th></tr></thead>
-          <tbody>${returnRows}</tbody>
-        </table>
+    // Items layout
+    const billItemsGrid = document.getElementById('billItemsGrid');
+    latest.items.forEach(i => {
+      const itemDiv = document.createElement('div');
+      itemDiv.className = 'item';
+      itemDiv.innerHTML = `
+        <div class="item-name">${i.name}</div>
+        <div class="item-line">
+          <span>${i.qty} × Rs. ${i.price.toFixed(2)}</span>
+          <span>Rs. ${(i.qty * i.price).toFixed(2)}</span>
+        </div>
       `;
+      billItemsGrid.appendChild(itemDiv);
+    });
+
+    // Return items
+    if (latest.returns?.length > 0) {
+      document.getElementById('returnSectionTitle').style.display = 'block';
+      const returnItemsGrid = document.getElementById('returnItemsGrid');
+      latest.returns.forEach(r => {
+        const div = document.createElement('div');
+        div.className = 'item';
+        div.innerHTML = `
+          <div class="item-name">${r.name}</div>
+          <div class="item-line">
+            <span>Return</span>
+            <span>Rs. ${r.returnPrice.toFixed(2)}</span>
+          </div>
+        `;
+        returnItemsGrid.appendChild(div);
+      });
     }
 
-    // මුළු ගණන්
+    // Totals
     document.getElementById('billTotals').innerHTML = `
-      💵 TOtal Price of items: Rs. ${latest.grossAmount.toFixed(2)}<br>
-      🔁 total Price of return : Rs. ${latest.returnAmount.toFixed(2)}<br>
-     <br> ✅ Bill Amount: Rs. ${latest.netAmount.toFixed(2)}<br><br>
+      මුළු මුදල: Rs. ${latest.grossAmount.toFixed(2)}<br>
+      ආපසු වටිනාකම: Rs. ${latest.returnAmount.toFixed(2)}<br>
+      ගෙවිය යුතු මුදල: Rs. ${latest.netAmount.toFixed(2)}
     `;
   }
 </script>
