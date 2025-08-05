@@ -186,25 +186,27 @@
 <script>
   const bills = JSON.parse(localStorage.getItem('bills') || '[]');
   const stores = JSON.parse(localStorage.getItem('stores') || '[]');
-  const latest = bills[bills.length - 1];
+  const selectedBillId = localStorage.getItem('selectedBillId');
 
-  if (!latest) {
+  const bill = bills.find(b => b.id === selectedBillId);
+
+  if (!bill) {
     document.getElementById('billDate').textContent = '';
     document.getElementById('storeName').textContent = 'කිසිඳු බිලක් හමු නොවුණි';
   } else {
-    const store = stores.find(s => s.id === latest.storeId);
+    const store = stores.find(s => s.id === bill.storeId);
     const storeName = store?.storeName || store?.name || 'අදාල කඩය';
-    const date = new Date(latest.date).toLocaleDateString('si-LK');
+    const date = new Date(bill.date).toLocaleDateString('si-LK');
 
-    // Update header info
+    // Header update
     document.getElementById('storeName').textContent = storeName;
     document.getElementById('billDate').textContent = `දිනය: ${date}`;
 
     // Items
     const billItemsGrid = document.getElementById('billItemsGrid');
-    billItemsGrid.innerHTML = ''; // clear old
+    billItemsGrid.innerHTML = '';
 
-    latest.items.forEach(i => {
+    (bill.items || []).forEach(i => {
       const itemDiv = document.createElement('div');
       itemDiv.className = 'item';
       itemDiv.innerHTML = `
@@ -217,14 +219,14 @@
       billItemsGrid.appendChild(itemDiv);
     });
 
-    // Returns
+    // Return Items
     const returnSectionTitle = document.getElementById('returnSectionTitle');
     const returnItemsGrid = document.getElementById('returnItemsGrid');
     returnItemsGrid.innerHTML = '';
 
-    if (latest.returns?.length > 0) {
+    if (bill.returns && bill.returns.length > 0) {
       returnSectionTitle.style.display = 'block';
-      latest.returns.forEach(r => {
+      bill.returns.forEach(r => {
         const div = document.createElement('div');
         div.className = 'item';
         div.innerHTML = `
@@ -242,12 +244,13 @@
 
     // Totals
     document.getElementById('billTotals').innerHTML = `
-      මුළු මුදල: Rs. ${latest.grossAmount.toFixed(2)}<br>
-      ආපසු වටිනාකම(return): Rs. ${latest.returnAmount.toFixed(2)}<br>
-      ගෙවිය යුතු මුදල: Rs. ${latest.netAmount.toFixed(2)}
+      මුළු මුදල: Rs. ${bill.grossAmount?.toFixed(2) || '0.00'}<br>
+      ආපසු වටිනාකම(return): Rs. ${bill.returnAmount?.toFixed(2) || '0.00'}<br>
+      ගෙවිය යුතු මුදල: Rs. ${bill.netAmount?.toFixed(2) || '0.00'}
     `;
   }
 </script>
+
 
 </body>
 </html>
