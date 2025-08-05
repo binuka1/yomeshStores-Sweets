@@ -27,33 +27,45 @@
       background-color: #fff;
     }
 
-    /* Header - Store name and phone */
+    /* Header */
     .header {
-      text-align: center;
-      margin-bottom: 5px;
       border-bottom: 1px solid #000;
-      padding-bottom: 5px;
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    .company-name {
+      font-size: clamp(22px, 6.5vw, 30px);
+      font-weight: 900;
+      letter-spacing: 1.2px;
+      margin-bottom: 6px;
+    }
+
+    .phone-number {
+      font-size: clamp(18px, 5.8vw, 26px);
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .store-date-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      padding: 0 5px;
     }
 
     .store-name {
       font-size: clamp(18px, 5.8vw, 26px);
       font-weight: bold;
-      margin-bottom: 4px;
+      text-align: left;
     }
 
-    .store-phone {
-      font-size: clamp(14px, 4.8vw, 18px);
-      font-weight: normal;
-      color: #000;
-    }
-
-    /* Date */
     .bill-date {
       font-size: clamp(16px, 5vw, 22px);
       font-weight: bold;
-      margin-top: 8px;
-      margin-bottom: 10px;
-      text-align: center;
+      text-align: right;
     }
 
     /* Section title */
@@ -74,7 +86,7 @@
 
     .item-name {
       font-weight: bold;
-      font-size: clamp(14px, 7vw, 20px);
+      font-size: clamp(19px, 7vw, 18px);
       margin-bottom: 2px;
     }
 
@@ -113,12 +125,13 @@
         border: none;
       }
 
-      .store-name {
+      .company-name {
         font-size: 16px;
       }
 
-      .store-phone {
-        font-size: 12px;
+      .phone-number,
+      .store-name {
+        font-size: 14px;
       }
 
       .bill-date {
@@ -130,7 +143,7 @@
       }
 
       .item-name {
-        font-size: 18px;
+        font-size: 13px;
       }
 
       .item-line {
@@ -151,11 +164,13 @@
 
 <div class="receipt">
   <div class="header">
-    <div class="store-name" id="storeName">Yomesh Stores</div>
-    <div class="store-phone">0765588995</div>
+    <div class="company-name">Yomesh Stores</div>
+    <div class="phone-number">0757806255</div>
+    <div class="store-date-line">
+      <div class="store-name" id="storeName">කඩේ නම</div>
+      <div class="bill-date" id="billDate">දිනය: 2025/08/05</div>
+    </div>
   </div>
-
-  <div class="bill-date" id="billDate">දිනය: 2025/08/05</div>
 
   <div class="section-title">බිල් අයිතම</div>
   <div id="billItemsGrid"></div>
@@ -174,20 +189,20 @@
   const latest = bills[bills.length - 1];
 
   if (!latest) {
-    document.getElementById('billDate').innerHTML = '';
-    document.getElementById('storeName').innerHTML = 'කිසිඳු බිලක් හමු නොවුණි';
+    document.getElementById('billDate').textContent = '';
+    document.getElementById('storeName').textContent = 'කිසිඳු බිලක් හමු නොවුණි';
   } else {
     const store = stores.find(s => s.id === latest.storeId);
     const storeName = store?.storeName || store?.name || 'අදාල කඩය';
     const date = new Date(latest.date).toLocaleDateString('si-LK');
 
-    // Store name & date
+    // Update header info
     document.getElementById('storeName').textContent = storeName;
     document.getElementById('billDate').textContent = `දිනය: ${date}`;
 
     // Items
     const billItemsGrid = document.getElementById('billItemsGrid');
-    billItemsGrid.innerHTML = ''; // clear previous
+    billItemsGrid.innerHTML = ''; // clear old
 
     latest.items.forEach(i => {
       const itemDiv = document.createElement('div');
@@ -209,7 +224,6 @@
 
     if (latest.returns?.length > 0) {
       returnSectionTitle.style.display = 'block';
-
       latest.returns.forEach(r => {
         const div = document.createElement('div');
         div.className = 'item';
@@ -229,7 +243,7 @@
     // Totals
     document.getElementById('billTotals').innerHTML = `
       මුළු මුදල: Rs. ${latest.grossAmount.toFixed(2)}<br>
-      ආපසු වටිනාකම: Rs. ${latest.returnAmount.toFixed(2)}<br>
+      ආපසු වටිනාකම(return): Rs. ${latest.returnAmount.toFixed(2)}<br>
       ගෙවිය යුතු මුදල: Rs. ${latest.netAmount.toFixed(2)}
     `;
   }
