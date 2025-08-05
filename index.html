@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login - Smart Billing System</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="login-container">
+    <h1>Smart Billing System - පිවිසුම</h1>
+    <form id="loginForm">
+      <label for="username">පරිශීලක නාමය</label>
+      <input type="text" id="username" name="username" placeholder="පරිශීලක නාමය ඇතුළත් කරන්න" required />
+
+      <label for="password">මුරපදය</label>
+      <input type="password" id="password" name="password" placeholder="මුරපදය ඇතුළත් කරන්න" required />
+
+      <button type="submit" class="primary">පිවිසෙන්න</button>
+      <p id="loginError" class="error-msg"></p>
+    </form>
+  </div>
+
+  <script src="js/login.js"></script>
+</body>
+</html>

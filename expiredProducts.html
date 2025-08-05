@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>පැරණි නිෂ්පාදන</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f1f7ff;
+      margin: 0;
+      padding: 12px 10px;
+      color: #222;
+    }
+
+    .container {
+      max-width: 720px;
+      width: 95vw;
+      margin: 20px auto;
+      background: #fff;
+      border-radius: 16px;
+      padding: 25px 20px;
+      box-shadow: 0 8px 35px rgba(0, 105, 192, 0.2);
+      box-sizing: border-box;
+      overflow-x: auto;
+    }
+
+    h1 {
+      text-align: center;
+      color: #1565c0;
+      margin-bottom: 25px;
+      font-size: 1.8rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 450px;
+      font-size: 0.9rem;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    th, td {
+      border: 1px solid #d1dff8;
+      padding: 10px 8px;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    th {
+      background-color: #1976d2;
+      color: white;
+      font-weight: 600;
+    }
+
+    tr:nth-child(even) td {
+      background-color: #f4f8ff;
+    }
+
+    td.product-name,
+    td.store-name {
+      max-width: 160px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    td.product-name:hover,
+    td.store-name:hover {
+      white-space: normal;
+      overflow: visible;
+      background-color: #e3f2fd;
+      cursor: default;
+    }
+
+    .delete-btn {
+      background-color: #e53935;
+      border: none;
+      color: white;
+      padding: 6px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      font-size: 0.85rem;
+      white-space: nowrap;
+    }
+
+    .delete-btn:hover {
+      background-color: #b71c1c;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+      .container {
+        width: 98vw;
+        padding: 20px 15px;
+        margin: 15px auto;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+        margin-bottom: 18px;
+      }
+
+      table {
+        min-width: 320px;
+        font-size: 0.8rem;
+      }
+
+      th, td {
+        padding: 8px 6px;
+      }
+
+      td.product-name,
+      td.store-name {
+        max-width: 100px;
+      }
+
+      .delete-btn {
+        padding: 5px 10px;
+        font-size: 0.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>🗑️ පැරණි නිෂ්පාදන</h1>
+
+    <table aria-label="පැරණි නිෂ්පාදන ලැයිස්තුව">
+      <thead>
+        <tr>
+          <th>නිෂ්පාදනය</th>
+          <th>කඩය</th>
+          <th>පැරණි ප්‍රමාණය</th>
+          <th>අවසන් දිනය</th>
+          <th>ඉවත් කරන්න</th>
+        </tr>
+      </thead>
+      <tbody id="expiredProductsBody">
+        <!-- Dynamic Content -->
+      </tbody>
+    </table>
+
+    <p id="noDataMsg" style="text-align:center; margin-top: 30px; color: #666; font-size: 1rem; display:none;">
+      පැරණි නිෂ්පාදන නොමැත.
+    </p>
+  </div>
+
+<script>
+  // Load products and stores from localStorage
+  const products = JSON.parse(localStorage.getItem('products') || '[]');
+  const stores = JSON.parse(localStorage.getItem('stores') || '[]');
+  const tbody = document.getElementById('expiredProductsBody');
+  const noDataMsg = document.getElementById('noDataMsg');
+
+  // Today's date (time reset to midnight)
+  const today = new Date();
+  today.setHours(0,0,0,0);
+
+  function formatDate(dateStr) {
+    if (!dateStr) return '-';
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('si-LK', {
+      year: 'numeric', month: 'short', day: 'numeric'
+    });
+  }
+
+  // Filter expired products (expiryDate < today)
+  const expiredProducts = products.filter(p => {
+    if (!p.expiryDate) return false;
+    const expiry = new Date(p.expiryDate);
+    expiry.setHours(0,0,0,0);
+    return expiry < today && p.quantity > 0;  // only with quantity > 0
+  });
+
+  function renderTable() {
+    tbody.innerHTML = '';
+
+    if (expiredProducts.length === 0) {
+      noDataMsg.style.display = 'block';
+      return;
+    } else {
+      noDataMsg.style.display = 'none';
+    }
+
+    expiredProducts.forEach((p, index) => {
+      const store = stores.find(s => s.id === p.storeId);
+      const storeName = store ? (store.storeName || store.name || 'නොදන්නා') : 'නොදන්නා';
+      const productName = p.name || p.productName || '-';
+      const expiredQty = p.quantity || 0;
+      const expiryDate = formatDate(p.expiryDate);
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="product-name" title="${productName}">${productName}</td>
+        <td class="store-name" title="${storeName}">${storeName}</td>
+        <td>${expiredQty}</td>
+        <td>${expiryDate}</td>
+        <td><button class="delete-btn" onclick="deleteExpiredProduct(${index})">ඉවත් කරන්න</button></td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function deleteExpiredProduct(index) {
+    const productToDelete = expiredProducts[index];
+    if (!productToDelete) return;
+
+    if (confirm(`"${productToDelete.name || productToDelete.productName}" නිෂ්පාදනය ඉවත් කරන්න අවශ්‍යද?`)) {
+      // Remove from main products list by id
+      const prodIndex = products.findIndex(p => p.id === productToDelete.id);
+      if (prodIndex !== -1) {
+        products.splice(prodIndex, 1);
+        localStorage.setItem('products', JSON.stringify(products));
+
+        // Also remove from expiredProducts list
+        expiredProducts.splice(index, 1);
+
+        renderTable();
+      }
+    }
+  }
+
+  renderTable();
+</script>
+
+</body>
+</html>

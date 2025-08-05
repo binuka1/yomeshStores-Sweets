@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>බිල්පත</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background-color: #f9f9f9;
+      padding: 0px;
+      color: #333;
+    }
+
+    .receipt {
+      max-width: 720px;
+      width: 90vw;
+      margin: 20px auto;
+      background: #fff;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 10px 40px rgba(0, 105, 192, 0.2);
+      overflow-x: auto;
+      box-sizing: border-box;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .header h2 {
+      margin: 0;
+    }
+
+    .header small {
+      color: #777;
+    }
+
+    .info {
+      margin: 20px 0;
+      font-size: 0.95rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 0.95rem;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #e0f0ff;
+    }
+
+    .totals {
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 1.05rem;
+    }
+
+    .footer {
+      margin-top: 30px;
+      text-align: center;
+      color: #888;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+<div class="receipt">
+  <div class="header">
+    <h2>Yomesh Stores</h2>
+    <small>0765588995</small>
+  </div>
+
+  <div class="info" id="billInfo">
+    <!-- බිල info load වෙයි -->
+  </div>
+
+  <div id="billItemsSection">
+    <!-- අයිතම Table එක load වෙයි -->
+  </div>
+
+  <div id="returnItemsSection">
+    <!-- ආපසු Table එක load වෙයි -->
+  </div>
+
+  <div class="totals" id="billTotals">
+    <!-- මුළු ගණන් load වෙයි -->
+  </div>
+
+  <div class="footer">
+    ස්තුතියි! නැවත පැමිණෙන්න.
+  </div>
+</div>
+
+<script>
+  const bills = JSON.parse(localStorage.getItem('bills') || '[]');
+  const stores = JSON.parse(localStorage.getItem('stores') || '[]');
+  const latest = bills[bills.length - 1];
+
+  if (!latest) {
+    document.getElementById('billInfo').innerHTML = '<p>කිසිඳු බිලක් හමු නොවුණි.</p>';
+  } else {
+    const store = stores.find(s => s.id === latest.storeId);
+    const storeName = store?.storeName || store?.name || 'අදාල කඩය';
+    const date = new Date(latest.date).toLocaleDateString('si-LK');
+
+    // බිල info
+    document.getElementById('billInfo').innerHTML = `
+      <p>🛒 කඩයේ නම: ${storeName}</p>
+      <p>📅 බිල දිනය: ${date}</p>
+    `;
+
+    // අයිතම Table
+    let itemRows = latest.items.map(i => `
+      <tr>
+        <td>${i.name}</td>
+        <td>${i.qty}</td>
+        <td>Rs. ${i.price.toFixed(2)}</td>
+        <td>Rs. ${(i.qty * i.price).toFixed(2)}</td>
+      </tr>
+    `).join('');
+
+    document.getElementById('billItemsSection').innerHTML = `
+      <h3>🧾 බිල් අයිතම</h3>
+      <table>
+        <thead>
+          <tr><th>නිෂ්පාදනය</th><th>ප්‍රමාණය</th><th>මිල</th><th>මුළු මුදල</th></tr>
+        </thead>
+        <tbody>${itemRows}</tbody>
+      </table>
+    `;
+
+    // ආපසු Table (අත්‍යවශ්‍ය නම්)
+    if (latest.returns?.length > 0) {
+      let returnRows = latest.returns.map(r => `
+        <tr>
+          <td>${r.name}</td>
+          <td>Rs. ${r.returnPrice.toFixed(2)}</td>
+        </tr>
+      `).join('');
+
+      document.getElementById('returnItemsSection').innerHTML = `
+        <h3>🔁 ආපසු අයිතම</h3>
+        <table>
+          <thead><tr><th>අයිතමය</th><th>වටිනාකම</th></tr></thead>
+          <tbody>${returnRows}</tbody>
+        </table>
+      `;
+    }
+
+    // මුළු ගණන්
+    document.getElementById('billTotals').innerHTML = `
+      💵 මුළු මුදල: Rs. ${latest.grossAmount.toFixed(2)}<br>
+      🔁 ආපසු මුදල: Rs. ${latest.returnAmount.toFixed(2)}<br>
+      ✅ අවසන් මුදල: Rs. ${latest.netAmount.toFixed(2)}<br><br>
+      📈 ලාභය: Rs. ${latest.profit.toFixed(2)}
+    `;
+  }
+</script>
+
+</body>
+</html>

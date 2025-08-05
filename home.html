@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Smart Billing Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+  <style>
+    /* Reset and base */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #f0f4f8;
+      color: #222;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1100px;
+      margin: 25px auto;
+      padding: 0 15px;
+    }
+
+    /* Header */
+    .main-header {
+      background-color: #1976d2;
+      color: #fff;
+      padding: 15px 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgb(25 118 210 / 0.4);
+      user-select: none;
+    }
+
+    .main-header h1 {
+      font-size: 1.9rem;
+      font-weight: 700;
+    }
+
+    .logout-btn {
+      background-color: #d32f2f;
+      border: none;
+      padding: 10px 18px;
+      font-weight: 700;
+      border-radius: 6px;
+      cursor: pointer;
+      color: #fff;
+      transition: background-color 0.25s ease;
+    }
+
+    .logout-btn:hover {
+      background-color: #9a2525;
+    }
+
+    /* Quick Actions Section */
+    .quick-actions {
+      margin-top: 30px;
+    }
+
+    .quick-actions h2 {
+      font-size: 1.6rem;
+      color: #1976d2;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+
+    .actions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 14px;
+    }
+
+    .actions-grid button {
+      background: linear-gradient(135deg, #42a5f5, #1976d2);
+      border: none;
+      color: #fff;
+      font-weight: 700;
+      padding: 15px 0;
+      font-size: 1.1rem;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgb(66 165 245 / 0.5);
+      transition: background-color 0.3s ease, transform 0.25s ease;
+      user-select: none;
+    }
+
+    .actions-grid button:hover {
+      background: linear-gradient(135deg, #1e88e5, #1565c0);
+      transform: translateY(-3px);
+    }
+
+    /* Dashboard Cards */
+    .dashboard-cards {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 22px;
+      margin-top: 40px;
+      justify-content: space-between;
+    }
+
+    .card {
+      background-color: #fff;
+      padding: 24px 30px;
+      border-radius: 14px;
+      box-shadow: 0 8px 20px rgb(0 0 0 / 0.08);
+      
+      min-width: 280px;
+      transition: box-shadow 0.3s ease;
+      user-select: none;
+    }
+
+    .card:hover {
+      box-shadow: 0 12px 30px rgb(0 0 0 / 0.15);
+    }
+
+    .card h3 {
+      font-size: 1.4rem;
+      margin-bottom: 15px;
+      color: #1976d2;
+      font-weight: 700;
+    }
+
+    .card p {
+      font-size: 2.3rem;
+      font-weight: 700;
+      color: #222;
+      letter-spacing: 0.02em;
+    }
+
+    .card ul {
+      list-style: none;
+      font-weight: 600;
+      font-size: 1rem;
+      color: #555;
+      padding-left: 18px;
+      margin-top: 10px;
+    }
+
+    .card ul li {
+      margin-bottom: 8px;
+    }
+
+    /* Card border colors */
+    .card.blue {
+      border-left: 6px solid #1976d2;
+    }
+
+    .card.red {
+      border-left: 6px solid #d32f2f;
+    }
+
+    .card.green {
+      border-left: 6px solid #388e3c;
+    }
+
+    /* Chart Section */
+    .chart-section {
+      margin: 50px auto 60px;
+      max-width: 1100px;
+      padding: 0 20px;
+      user-select: none;
+    }
+
+    .chart-section h2 {
+      font-size: 1.7rem;
+      color: #1976d2;
+      font-weight: 700;
+      margin-bottom: 22px;
+      text-align: center;
+    }
+
+    /* Footer */
+    .main-footer {
+      background-color: #1976d2;
+      color: white;
+      text-align: center;
+      padding: 15px 0;
+      font-size: 0.9rem;
+      font-weight: 600;
+      user-select: none;
+      box-shadow: 0 -2px 10px rgb(25 118 210 / 0.4);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .dashboard-cards {
+        flex-direction: column;
+        gap: 25px;
+      }
+
+      .actions-grid {
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      }
+    }
+  </style>
+
+</head>
+<body>
+  <header class="main-header">
+    <h1>📊 ගබඩා පාලන පුවරුව</h1>
+    <button class="logout-btn" onclick="logout()">ඉවත් වන්න</button>
+  </header>
+
+  <section class="quick-actions container">
+    <h2>🚀 ඉක්මන් ක්‍රියාකාරකම්</h2>
+    <div class="actions-grid">
+      <button onclick="location.href='billCreate.html'">🧾 බිල්පත් තනන්න</button>
+      <button onclick="location.href='storeData.html'">🏪 වෙළඳසැල්</button>
+      <button onclick="location.href='stock.html'">🛒 නිෂ්පාදන</button>
+      <button onclick="location.href='expiredProducts.html'">❌ කල් ඉකුත්</button>
+      <button onclick="location.href='billHistory.html'">📜 බිල් ඉතිහාසය</button>
+      <button onclick="location.href='returns.html'">🔄 ආපසු අයිතම </button>
+      <button onclick="location.href='reports.html'">📊 වාර්තා</button>
+    </div>
+  </section>
+
+  <section class="dashboard-cards container">
+    <div class="card blue">
+      <h3>💹 මාසික ලාභය</h3>
+      <p id="monthlyProfit">රු. 0</p>
+    </div>
+    <div class="card red">
+      <h3>❌ කල් ඉකුත් භාණ්ඩ</h3>
+      <p id="expiredCount">0</p>
+    </div>
+    <div class="card green">
+      <h3>🏆 Sillara Kada Rank</h3>
+      <ul id="sillaraRankList"></ul>
+      <h3 style="margin-top:20px;">🏆 Thoga Kada Rank</h3>
+      <ul id="thogaRankList"></ul>
+    </div>
+  </section>
+
+  <section class="chart-section container">
+    <h2>🛒 Sillara vs Thoga වෙළඳසැල් විකුණුම්</h2>
+    <canvas id="salesChart" height="100"></canvas>
+  </section>
+
+  <footer class="main-footer">
+    <p>&copy; 2025 Smart Billing System</p>
+  </footer>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const stores = JSON.parse(localStorage.getItem('stores')) || [];
+
+  function logout() {
+    localStorage.removeItem('loggedInUser');
+    window.location.href = 'index.html';
+  }
+
+  function checkExpiredProducts() {
+    const products = JSON.parse(localStorage.getItem('products')) || [];
+    const expiredProducts = JSON.parse(localStorage.getItem('expiredProducts')) || [];
+    const today = new Date();
+    const updatedProducts = [];
+    const newlyExpired = [];
+
+    for (const p of products) {
+      const expiry = new Date(p.expiryDate);
+      if (expiry < today || p.quantity <= 0) {
+        newlyExpired.push(p);
+      } else {
+        updatedProducts.push(p);
+      }
+    }
+
+    if (newlyExpired.length > 0) {
+      localStorage.setItem('products', JSON.stringify(updatedProducts));
+      localStorage.setItem('expiredProducts', JSON.stringify(expiredProducts.concat(newlyExpired)));
+    }
+  }
+
+  function calculateProfitByMonthYear(month, year) {
+    const bills = JSON.parse(localStorage.getItem('bills')) || [];
+    return bills.reduce((total, bill) => {
+      const d = new Date(bill.date);
+      if (d.getFullYear() === year && d.getMonth() === month) {
+        return total + (bill.profit || 0);
+      }
+      return total;
+    }, 0);
+  }
+
+  function getExpiredProductCount() {
+    const expiredProducts = JSON.parse(localStorage.getItem('expiredProducts')) || [];
+    return expiredProducts.reduce((t, p) => t + (p.quantity || 0), 0);
+  }
+
+  function getTopStoresByProfitByType(month, year) {
+    const bills = JSON.parse(localStorage.getItem('bills')) || [];
+    const storeMap = {};
+    stores.forEach(store => { storeMap[store.id] = store; });
+    const profitByStore = {};
+
+    bills.forEach(bill => {
+      const d = new Date(bill.date);
+      if (d.getFullYear() === year && d.getMonth() === month) {
+        if (!profitByStore[bill.storeId]) profitByStore[bill.storeId] = 0;
+        profitByStore[bill.storeId] += bill.profit || 0;
+      }
+    });
+
+    let sillaraStores = [], thogaStores = [];
+
+    Object.entries(profitByStore).forEach(([id, profit]) => {
+      const s = storeMap[id];
+      if (!s) return;
+      const entry = { storeName: s.storeName, profit };
+      if (s.storeType === 'Sillara') sillaraStores.push(entry);
+      else if (s.storeType === 'Thoga') thogaStores.push(entry);
+    });
+
+    sillaraStores.sort((a,b) => b.profit - a.profit);
+    thogaStores.sort((a,b) => b.profit - a.profit);
+
+    return {
+      sillaraStores: sillaraStores.slice(0,5),
+      thogaStores: thogaStores.slice(0,5)
+    };
+  }
+
+  function renderDashboard() {
+    const d = new Date();
+    const month = d.getMonth();
+    const year = d.getFullYear();
+
+    document.getElementById('monthlyProfit').textContent = `රු. ${calculateProfitByMonthYear(month, year).toLocaleString()}`;
+    document.getElementById('expiredCount').textContent = getExpiredProductCount();
+
+    const { sillaraStores, thogaStores } = getTopStoresByProfitByType(month, year);
+
+    const sillaraList = document.getElementById('sillaraRankList');
+    sillaraList.innerHTML = '';
+    sillaraStores.forEach(({storeName, profit}) => {
+      const li = document.createElement('li');
+      li.textContent = `${storeName} - රු. ${profit.toFixed(2)}`;
+      sillaraList.appendChild(li);
+    });
+
+    const thogaList = document.getElementById('thogaRankList');
+    thogaList.innerHTML = '';
+    thogaStores.forEach(({storeName, profit}) => {
+      const li = document.createElement('li');
+      li.textContent = `${storeName} - රු. ${profit.toFixed(2)}`;
+      thogaList.appendChild(li);
+    });
+  }
+
+  function renderSalesChart() {
+    const ctx = document.getElementById('salesChart').getContext('2d');
+    const bills = JSON.parse(localStorage.getItem('bills')) || [];
+    const d = new Date();
+    const month = d.getMonth();
+    const year = d.getFullYear();
+
+    const sillaraSales = {}, thogaSales = {};
+
+    bills.forEach(b => {
+      const bd = new Date(b.date);
+      if (bd.getFullYear() === year && bd.getMonth() === month) {
+        const s = stores.find(s => s.id === b.storeId);
+        const name = s ? s.storeName : 'නොදන්නා';
+        if (s?.storeType === 'Sillara') sillaraSales[name] = (sillaraSales[name] || 0) + (b.total || 0);
+        else if (s?.storeType === 'Thoga') thogaSales[name] = (thogaSales[name] || 0) + (b.total || 0);
+      }
+    });
+
+    const allStores = [...new Set([...Object.keys(sillaraSales), ...Object.keys(thogaSales)])];
+
+    const data = {
+      labels: allStores,
+      datasets: [
+        { label: 'Sillara', backgroundColor: '#1976d2', data: allStores.map(s => sillaraSales[s] || 0) },
+        { label: 'Thoga', backgroundColor: '#388e3c', data: allStores.map(s => thogaSales[s] || 0) }
+      ]
+    };
+
+    if (window.salesChartInstance) window.salesChartInstance.destroy();
+    window.salesChartInstance = new Chart(ctx, {
+      type: 'bar',
+      data,
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'top' },
+          title: { display: true, text: 'Sillara vs Thoga වෙළඳසැල් විකුණුම්' }
+        },
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+  }
+
+  window.onload = () => {
+    checkExpiredProducts();
+    renderDashboard();
+    renderSalesChart();
+  };
+</script>
+
+</body>
+</html>
