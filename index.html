@@ -5,6 +5,79 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Login - Smart Billing System</title>
   <link rel="stylesheet" href="css/style.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #e3f2fd;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .login-container {
+      background: white;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 8px 30px rgba(0,105,192,0.2);
+      max-width: 400px;
+      width: 90%;
+      box-sizing: border-box;
+    }
+
+    h1 {
+      text-align: center;
+      color: #1565c0;
+      margin-bottom: 30px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 500;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 1rem;
+      box-sizing: border-box;
+      transition: border-color 0.3s;
+    }
+
+    input:focus {
+      border-color: #2196f3;
+      outline: none;
+    }
+
+    .primary {
+      width: 100%;
+      padding: 12px;
+      background: #0288d1;
+      color: white;
+      font-size: 1rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .primary:hover {
+      background-color: #01579b;
+    }
+
+    .error-msg {
+      color: red;
+      font-size: 0.9rem;
+      text-align: center;
+      margin-top: 10px;
+    }
+  </style>
 </head>
 <body>
   <div class="login-container">
@@ -21,6 +94,22 @@
     </form>
   </div>
 
-  <script src="js/login.js"></script>
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const errorMsg = document.getElementById('loginError');
+
+      // Simple localStorage login logic (replace with real logic later)
+      if (username === 'admin' && password === '1234') {
+        localStorage.setItem('loggedIn', 'true');
+        window.location.href = 'home.html';
+      } else {
+        errorMsg.textContent = 'වැරදි පරිශීලක නාමය හෝ මුරපදය';
+      }
+    });
+  </script>
 </body>
 </html>
