@@ -14,7 +14,7 @@
 
     .receipt {
       max-width: 720px;
-      width: 90vw;
+      width: 95vw;
       margin: 20px auto;
       background: #fff;
       border-radius: 16px;
@@ -66,7 +66,7 @@
     }
 
     .footer {
-      margin-top: 30px;
+      margin-top: 10px;
       text-align: center;
       color: #888;
       font-size: 0.9rem;
@@ -98,7 +98,7 @@
   </div>
 
   <div class="footer">
-    ස්තුතියි! නැවත පැමිණෙන්න.
+  <h2>ස්තුතියි!</h2>
   </div>
 </div>
 
@@ -116,8 +116,8 @@
 
     // බිල info
     document.getElementById('billInfo').innerHTML = `
-      <p>🛒 කඩයේ නම: ${storeName}</p>
-      <p>📅 බිල දිනය: ${date}</p>
+      <p>🛒 කඩයේ නම:<b> ${storeName}</b></p>
+      <p><b>දිනය: ${date}</b></p>
     `;
 
     // අයිතම Table
@@ -160,10 +160,9 @@
 
     // මුළු ගණන්
     document.getElementById('billTotals').innerHTML = `
-      💵 මුළු මුදල: Rs. ${latest.grossAmount.toFixed(2)}<br>
-      🔁 ආපසු මුදල: Rs. ${latest.returnAmount.toFixed(2)}<br>
-      ✅ අවසන් මුදල: Rs. ${latest.netAmount.toFixed(2)}<br><br>
-      📈 ලාභය: Rs. ${latest.profit.toFixed(2)}
+      💵 TOtal Price of items: Rs. ${latest.grossAmount.toFixed(2)}<br>
+      🔁 total Price of return : Rs. ${latest.returnAmount.toFixed(2)}<br>
+     <br> ✅ Bill Amount: Rs. ${latest.netAmount.toFixed(2)}<br><br>
     `;
   }
 </script>
