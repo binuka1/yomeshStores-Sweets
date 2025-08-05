@@ -81,12 +81,16 @@
 
     <div class="summary">
       <div class="card">
-        <h3>මුළු ලාභය</h3>
-        <p id="totalProfit">Rs. 0.00</p>
+        <h3>මුළු ලාභය (ලාභය - වියදම්)</h3>
+        <p id="netProfit">Rs. 0.00</p>
       </div>
       <div class="card">
         <h3>මුළු විකුණුම්</h3>
         <p id="totalSales">Rs. 0.00</p>
+      </div>
+      <div class="card">
+        <h3>මුළු වියදම්</h3>
+        <p id="totalExpenses">Rs. 0.00</p>
       </div>
     </div>
 
@@ -98,16 +102,25 @@
   <script>
     const monthNames = ['ජනවාරි','පෙබ','මාර්තු','අප්‍රේල්','මැයි','ජුනි','ජුලි','අගෝ','සැප්','ඔක්','නොවැ','දෙසැ'];
     const bills = JSON.parse(localStorage.getItem('bills') || '[]');
+    const expenses = JSON.parse(localStorage.getItem('expenses') || '[]');
+
     const yearSelect = document.getElementById('yearSelect');
     const monthSelect = document.getElementById('monthSelect');
-    const totalProfitEl = document.getElementById('totalProfit');
+    const netProfitEl = document.getElementById('netProfit');
     const totalSalesEl = document.getElementById('totalSales');
+    const totalExpensesEl = document.getElementById('totalExpenses');
 
     const salesChartCtx = document.getElementById('salesChart').getContext('2d');
     const topItemsCtx = document.getElementById('topItemsChart').getContext('2d');
     let salesChart, topItemsChart;
 
-    const years = [...new Set(bills.map(b => new Date(b.date).getFullYear()))].sort();
+    // Load years from bills and expenses
+    const yearsSet = new Set([
+      ...bills.map(b => new Date(b.date).getFullYear()),
+      ...expenses.map(e => new Date(e.date).getFullYear())
+    ]);
+    const years = [...yearsSet].sort();
+
     years.forEach(y => {
       yearSelect.innerHTML += `<option value="${y}">${y}</option>`;
     });
@@ -119,20 +132,34 @@
     function updateReport() {
       const year = +yearSelect.value;
       const month = +monthSelect.value;
-      const filtered = bills.filter(b => {
+
+      // Filter bills and expenses by month/year
+      const filteredBills = bills.filter(b => {
         const d = new Date(b.date);
         return d.getFullYear() === year && (d.getMonth() + 1) === month;
       });
 
-      const profit = filtered.reduce((sum, b) => sum + (b.profit || 0), 0);
-      const sales = filtered.reduce((sum, b) => sum + (b.netAmount || 0), 0);
+      const filteredExpenses = expenses.filter(e => {
+        const d = new Date(e.date);
+        return d.getFullYear() === year && (d.getMonth() + 1) === month;
+      });
 
-      totalProfitEl.textContent = `Rs. ${profit.toFixed(2)}`;
-      totalSalesEl.textContent = `Rs. ${sales.toFixed(2)}`;
+      // Calculate totals
+      const totalProfitFromBills = filteredBills.reduce((sum, b) => sum + (b.profit || 0), 0);
+      const totalSales = filteredBills.reduce((sum, b) => sum + (b.netAmount || 0), 0);
+      const totalExpenses = filteredExpenses.reduce((sum, e) => sum + (parseFloat(e.cost) || 0), 0);
 
-      const storeMap = {};
+      // Net profit = bills profit - expenses
+      const netProfit = totalProfitFromBills - totalExpenses;
+
+      // Update UI
+      netProfitEl.textContent = `Rs. ${netProfit.toFixed(2)}`;
+      totalSalesEl.textContent = `Rs. ${totalSales.toFixed(2)}`;
+      totalExpensesEl.textContent = `Rs. ${totalExpenses.toFixed(2)}`;
+
+      // Items quantity sold (for top items chart)
       const itemMap = {};
-      filtered.forEach(b => {
+      filteredBills.forEach(b => {
         (b.items || []).forEach(i => {
           itemMap[i.name] = (itemMap[i.name] || 0) + i.qty;
         });
@@ -151,14 +178,23 @@
             data: itemQtys,
             backgroundColor: '#42a5f5'
           }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+            title: { display: true, text: 'ඉහළ විකිණුණු අයිතම' }
+          }
         }
       });
 
+      // Daily sales for sales chart
       const dailySales = {};
-      filtered.forEach(b => {
+      filteredBills.forEach(b => {
         const day = new Date(b.date).getDate();
         dailySales[day] = (dailySales[day] || 0) + (b.netAmount || 0);
       });
+
       const days = Object.keys(dailySales);
       const values = Object.values(dailySales);
 
@@ -175,6 +211,12 @@
             fill: true,
             tension: 0.2
           }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: true }
+          }
         }
       });
     }
