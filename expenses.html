@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>වියදම් සහ Free දීමනා</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f4f9ff;
+      color: #222;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 14px;
+      box-shadow: 0 8px 25px rgba(0,105,192,0.15);
+    }
+
+    h1 {
+      color: #1565c0;
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .section {
+      margin-bottom: 40px;
+    }
+
+    .section h2 {
+      color: #0d47a1;
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: 500;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      margin-top: 5px;
+      box-sizing: border-box;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 18px;
+      background: #1976d2;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    button:hover {
+      background: #0d47a1;
+    }
+
+    .entry-list {
+      margin-top: 20px;
+    }
+
+    .entry-list table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 30px;
+    }
+
+    .entry-list th, .entry-list td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .entry-list th {
+      background-color: #0288d1;
+      color: white;
+    }
+
+    .entry-list tr:nth-child(even) td {
+      background-color: #f5f5f5;
+    }
+
+    @media (max-width: 768px) {
+      input, select {
+        font-size: 0.95rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📊 වියදම් සහ Free දීමනා</h1>
+
+    <div class="section">
+      <h2>1️⃣ සාමාන්‍ය වියදම් (store එකක් නොමැත)</h2>
+      <label for="generalDesc">විස්තරය</label>
+      <input type="text" id="generalDesc" placeholder="උදා: transport, utility...">
+      <label for="generalCost">වියදම් මුදල (Rs)</label>
+      <input type="number" id="generalCost" min="0" step="0.01" placeholder="0.00">
+      <button onclick="addGeneralExpense()">+ එකතු කරන්න</button>
+    </div>
+
+    <div class="section">
+      <h2>2️⃣ Free දීමනා (store එකකට product)</h2>
+      <label for="storeSelect">කඩය</label>
+      <select id="storeSelect"></select>
+
+      <label for="productSelect">නිෂ්පාදනය</label>
+      <select id="productSelect"></select>
+
+      <label for="freeQty">ප්‍රමාණය</label>
+      <input type="number" id="freeQty" min="1" placeholder="1">
+
+      <label for="freeCost">මුළු වියදම (Rs)</label>
+      <input type="number" id="freeCost" min="0" step="0.01" placeholder="0.00">
+
+      <button onclick="addFreeItem()">+ එකතු කරන්න</button>
+    </div>
+
+    <div class="section entry-list">
+      <h2>📄 සාමාන්‍ය වියදම් ලැයිස්තුව</h2>
+      <table id="generalExpenseTable">
+        <thead>
+          <tr>
+            <th>විස්තරය</th>
+            <th>වියදම (Rs)</th>
+            <th>දිනය</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <h2>🎁 Free දීමනා ලැයිස්තුව</h2>
+      <table id="freeExpenseTable">
+        <thead>
+          <tr>
+            <th>කඩය</th>
+            <th>නිෂ්පාදනය</th>
+            <th>ප්‍රමාණය</th>
+            <th>වියදම (Rs)</th>
+            <th>දිනය</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const stores = JSON.parse(localStorage.getItem('stores') || '[]');
+    const products = JSON.parse(localStorage.getItem('products') || '[]');
+    let expenses = JSON.parse(localStorage.getItem('expenses') || '[]');
+
+    const storeSelect = document.getElementById('storeSelect');
+    const productSelect = document.getElementById('productSelect');
+    const generalTableBody = document.querySelector('#generalExpenseTable tbody');
+    const freeTableBody = document.querySelector('#freeExpenseTable tbody');
+
+    function loadDropdowns() {
+      storeSelect.innerHTML = '<option value="">-- තෝරන්න --</option>';
+      stores.forEach(s => {
+        storeSelect.innerHTML += `<option value="${s.id}">${s.storeName || s.name}</option>`;
+      });
+
+      productSelect.innerHTML = '<option value="">-- තෝරන්න --</option>';
+      products.forEach(p => {
+        productSelect.innerHTML += `<option value="${p.id}">${p.productName || p.name}</option>`;
+      });
+    }
+
+    function formatDate(iso) {
+      const d = new Date(iso);
+      return d.toLocaleDateString('si-LK', {
+        year: 'numeric', month: 'short', day: 'numeric',
+        hour: '2-digit', minute: '2-digit'
+      });
+    }
+
+    function renderExpenses() {
+      generalTableBody.innerHTML = '';
+      freeTableBody.innerHTML = '';
+
+      const general = expenses.filter(e => e.type === 'වියදම');
+      const free = expenses.filter(e => e.type === 'Free දීමනාව');
+
+      if (general.length === 0) {
+        generalTableBody.innerHTML = '<tr><td colspan="3">දත්ත නොමැත</td></tr>';
+      } else {
+        general.slice().reverse().forEach(e => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${e.desc || '-'}</td>
+            <td>Rs. ${parseFloat(e.cost).toFixed(2)}</td>
+            <td>${formatDate(e.date)}</td>
+          `;
+          generalTableBody.appendChild(tr);
+        });
+      }
+
+      if (free.length === 0) {
+        freeTableBody.innerHTML = '<tr><td colspan="5">දත්ත නොමැත</td></tr>';
+      } else {
+        free.slice().reverse().forEach(e => {
+          const store = stores.find(s => s.id === e.storeId);
+          const product = products.find(p => p.id === e.productId);
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${store ? (store.storeName || store.name) : '-'}</td>
+            <td>${product ? (product.productName || product.name) : '-'}</td>
+            <td>${e.qty}</td>
+            <td>Rs. ${parseFloat(e.cost).toFixed(2)}</td>
+            <td>${formatDate(e.date)}</td>
+          `;
+          freeTableBody.appendChild(tr);
+        });
+      }
+    }
+
+    function addGeneralExpense() {
+      const desc = document.getElementById('generalDesc').value.trim();
+      const cost = parseFloat(document.getElementById('generalCost').value);
+
+      if (!desc || isNaN(cost) || cost <= 0) {
+        return alert('කරුණාකර වලංගු විස්තරයක් සහ මුදලක් ඇතුළත් කරන්න');
+      }
+
+      const date = new Date().toISOString();
+
+      expenses.push({
+        type: 'වියදම',
+        desc,
+        cost,
+        date
+      });
+
+      localStorage.setItem('expenses', JSON.stringify(expenses));
+
+      // clear fields
+      document.getElementById('generalDesc').value = '';
+      document.getElementById('generalCost').value = '';
+      renderExpenses();
+    }
+
+    function addFreeItem() {
+      const storeId = storeSelect.value;
+      const productId = productSelect.value;
+      const qty = parseInt(document.getElementById('freeQty').value);
+      const cost = parseFloat(document.getElementById('freeCost').value);
+
+      if (!storeId || !productId || isNaN(qty) || qty <= 0 || isNaN(cost) || cost <= 0) {
+        return alert('කරුණාකර සියළුම තොරතුරු ඇතුළත් කරන්න');
+      }
+
+      const date = new Date().toISOString();
+
+      expenses.push({
+        type: 'Free දීමනාව',
+        storeId,
+        productId,
+        qty,
+        cost,
+        date
+      });
+
+      // 🧮 Profit එකෙන් අඩු කරන්න
+      const month = date.slice(0,7); // "YYYY-MM"
+      let profits = JSON.parse(localStorage.getItem('monthlyProfits') || '{}');
+      if (!profits[month]) profits[month] = 0;
+      profits[month] -= cost;
+      if (profits[month] < 0) profits[month] = 0;
+      localStorage.setItem('monthlyProfits', JSON.stringify(profits));
+
+      localStorage.setItem('expenses', JSON.stringify(expenses));
+
+      // clear fields
+      storeSelect.value = '';
+      productSelect.value = '';
+      document.getElementById('freeQty').value = '';
+      document.getElementById('freeCost').value = '';
+
+      renderExpenses();
+    }
+
+    loadDropdowns();
+    renderExpenses();
+  </script>
+</body>
+</html>
