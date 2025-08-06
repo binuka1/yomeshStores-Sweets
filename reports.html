@@ -2,71 +2,137 @@
 <html lang="si">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>වාර්තා</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #eef6ff;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
       margin: 0;
-      margin-bottom: 20px;
       padding: 20px;
-      color: #333;
+      color: #222;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
     }
+
     .container {
-      max-width: 1200px;
-      margin: auto;
+      width: 100%;
+      max-width: 1100px;
       background: #fff;
-      padding: 30px;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      border-radius: 20px;
+      padding: 30px 40px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+      box-sizing: border-box;
     }
+
     h1 {
       text-align: center;
-      color: #0d47a1;
-      margin-bottom: 30px;
+      color: #1e3a8a;
+      margin-bottom: 40px;
+      font-weight: 600;
+      font-size: 2.6rem;
+      user-select: none;
     }
+
     .filters {
       display: flex;
-      gap: 15px;
+      gap: 20px;
       justify-content: center;
-      margin-bottom: 30px;
       flex-wrap: wrap;
+      margin-bottom: 40px;
     }
-    select {
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 1rem;
+
+    select, button {
+      padding: 12px 20px;
+      border-radius: 12px;
+      border: 1.5px solid #cbd5e1;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: #f9fafb;
+      min-width: 140px;
+      user-select: none;
     }
-    canvas {
-      margin: 20px 0;
-      width: 100% !important;
-      height: 400px !important;
+
+    select:hover, button:hover {
+      border-color: #2563eb;
+      box-shadow: 0 0 10px #2563eb;
+      background: #e0e7ff;
     }
+
+    button.clear-btn {
+      background: #ef4444;
+      border-color: #ef4444;
+      color: white;
+      min-width: 100px;
+      font-weight: 600;
+    }
+
+    button.clear-btn:hover {
+      background: #dc2626;
+      border-color: #dc2626;
+      box-shadow: 0 0 12px #dc2626;
+    }
+
     .summary {
       display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
+      gap: 25px;
       justify-content: space-around;
-      margin-top: 30px;
+      flex-wrap: wrap;
+      margin-bottom: 50px;
     }
+
     .card {
-      flex: 1 1 200px;
-      background: #e3f2fd;
-      padding: 20px;
-      border-radius: 12px;
+      flex: 1 1 260px;
+      background: #e0e7ff;
+      padding: 25px 20px;
+      border-radius: 16px;
       text-align: center;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      box-shadow: 0 6px 15px rgba(30,58,138,0.12);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      user-select: none;
     }
+
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 15px 25px rgba(30,58,138,0.3);
+    }
+
     .card h3 {
-      margin: 0;
-      color: #0277bd;
+      margin-bottom: 15px;
+      color: #1e40af;
+      font-weight: 600;
+      font-size: 1.2rem;
     }
+
     .card p {
-      font-size: 1.5rem;
-      margin-top: 8px;
-      color: #01579b;
+      font-size: 2.1rem;
+      font-weight: 700;
+      color: #1e3a8a;
+    }
+
+    canvas {
+      width: 100% !important;
+      max-height: 450px !important;
+      margin-bottom: 50px;
+      user-select: none;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .summary {
+        flex-direction: column;
+        gap: 20px;
+      }
+      .filters {
+        gap: 15px;
+      }
     }
   </style>
 </head>
@@ -75,27 +141,28 @@
     <h1>📊 වාර්තා පුවරුව</h1>
 
     <div class="filters">
-      <select id="yearSelect"></select>
-      <select id="monthSelect"></select>
+      <select id="yearSelect" aria-label="වසර තෝරන්න"></select>
+      <select id="monthSelect" aria-label="මාසය තෝරන්න"></select>
+      <button class="clear-btn" id="clearFiltersBtn" title="තෝරාගත් වසර හා මාසය මකන්න">Clear Filters</button>
     </div>
 
-    <div class="summary">
-      <div class="card">
+    <div class="summary" aria-live="polite" aria-atomic="true">
+      <div class="card" role="region" aria-label="මුළු ලාභය">
         <h3>මුළු ලාභය (ලාභය - වියදම්)</h3>
         <p id="netProfit">Rs. 0.00</p>
       </div>
-      <div class="card">
+      <div class="card" role="region" aria-label="මුළු විකුණුම්">
         <h3>මුළු විකුණුම්</h3>
         <p id="totalSales">Rs. 0.00</p>
       </div>
-      <div class="card">
+      <div class="card" role="region" aria-label="මුළු වියදම්">
         <h3>මුළු වියදම්</h3>
         <p id="totalExpenses">Rs. 0.00</p>
       </div>
     </div>
 
-    <canvas id="salesChart"></canvas>
-    <canvas id="topItemsChart"></canvas>
+    <canvas id="salesChart" aria-label="දිනපතා විකුණුම් වර්ගකරණය" role="img"></canvas>
+    <canvas id="topItemsChart" aria-label="ඉහළ විකිණුණු අයිතම වර්ගකරණය" role="img"></canvas>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -109,55 +176,76 @@
     const netProfitEl = document.getElementById('netProfit');
     const totalSalesEl = document.getElementById('totalSales');
     const totalExpensesEl = document.getElementById('totalExpenses');
+    const clearFiltersBtn = document.getElementById('clearFiltersBtn');
 
     const salesChartCtx = document.getElementById('salesChart').getContext('2d');
     const topItemsCtx = document.getElementById('topItemsChart').getContext('2d');
     let salesChart, topItemsChart;
 
-    // Load years from bills and expenses
+    // Load unique years from bills and expenses
     const yearsSet = new Set([
       ...bills.map(b => new Date(b.date).getFullYear()),
       ...expenses.map(e => new Date(e.date).getFullYear())
     ]);
     const years = [...yearsSet].sort();
 
-    years.forEach(y => {
-      yearSelect.innerHTML += `<option value="${y}">${y}</option>`;
-    });
+    // Populate year dropdown
+    function populateYears() {
+      yearSelect.innerHTML = '<option value="">-- වසර තෝරන්න --</option>';
+      years.forEach(y => {
+        yearSelect.innerHTML += `<option value="${y}">${y}</option>`;
+      });
+    }
 
-    monthNames.forEach((m, i) => {
-      monthSelect.innerHTML += `<option value="${i+1}">${m}</option>`;
-    });
+    // Populate month dropdown
+    function populateMonths() {
+      monthSelect.innerHTML = '<option value="">-- මාසය තෝරන්න --</option>';
+      monthNames.forEach((m, i) => {
+        monthSelect.innerHTML += `<option value="${i+1}">${m}</option>`;
+      });
+    }
 
-    function updateReport() {
-      const year = +yearSelect.value;
-      const month = +monthSelect.value;
+    // Format currency nicely with commas
+    function formatCurrency(amount) {
+      return 'Rs. ' + amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
 
-      // Filter bills and expenses by month/year
+    // Filter bills and expenses based on selection, or all if empty
+    function filterData() {
+      const year = yearSelect.value ? +yearSelect.value : null;
+      const month = monthSelect.value ? +monthSelect.value : null;
+
       const filteredBills = bills.filter(b => {
         const d = new Date(b.date);
-        return d.getFullYear() === year && (d.getMonth() + 1) === month;
+        return (!year || d.getFullYear() === year) && (!month || (d.getMonth() + 1) === month);
       });
 
       const filteredExpenses = expenses.filter(e => {
         const d = new Date(e.date);
-        return d.getFullYear() === year && (d.getMonth() + 1) === month;
+        return (!year || d.getFullYear() === year) && (!month || (d.getMonth() + 1) === month);
       });
+
+      return { filteredBills, filteredExpenses };
+    }
+
+    // Update report UI & charts
+    function updateReport() {
+      const { filteredBills, filteredExpenses } = filterData();
 
       // Calculate totals
       const totalProfitFromBills = filteredBills.reduce((sum, b) => sum + (b.profit || 0), 0);
       const totalSales = filteredBills.reduce((sum, b) => sum + (b.netAmount || 0), 0);
       const totalExpenses = filteredExpenses.reduce((sum, e) => sum + (parseFloat(e.cost) || 0), 0);
 
-      // Net profit = bills profit - expenses
+      // Net profit
       const netProfit = totalProfitFromBills - totalExpenses;
 
       // Update UI
-      netProfitEl.textContent = `Rs. ${netProfit.toFixed(2)}`;
-      totalSalesEl.textContent = `Rs. ${totalSales.toFixed(2)}`;
-      totalExpensesEl.textContent = `Rs. ${totalExpenses.toFixed(2)}`;
+      netProfitEl.textContent = formatCurrency(netProfit);
+      totalSalesEl.textContent = formatCurrency(totalSales);
+      totalExpensesEl.textContent = formatCurrency(totalExpenses);
 
-      // Items quantity sold (for top items chart)
+      // Top items sold quantities
       const itemMap = {};
       filteredBills.forEach(b => {
         (b.items || []).forEach(i => {
@@ -168,6 +256,7 @@
       const itemNames = Object.keys(itemMap);
       const itemQtys = Object.values(itemMap);
 
+      // Destroy previous charts to avoid overlap
       if (topItemsChart) topItemsChart.destroy();
       topItemsChart = new Chart(topItemsCtx, {
         type: 'bar',
@@ -176,7 +265,7 @@
           datasets: [{
             label: 'Qty Sold',
             data: itemQtys,
-            backgroundColor: '#42a5f5'
+            backgroundColor: '#3b82f6'
           }]
         },
         options: {
@@ -184,6 +273,10 @@
           plugins: {
             legend: { display: false },
             title: { display: true, text: 'ඉහළ විකිණුණු අයිතම' }
+          },
+          animation: {
+            duration: 1000,
+            easing: 'easeOutQuart'
           }
         }
       });
@@ -195,8 +288,9 @@
         dailySales[day] = (dailySales[day] || 0) + (b.netAmount || 0);
       });
 
-      const days = Object.keys(dailySales);
-      const values = Object.values(dailySales);
+      // Sort days ascending
+      const days = Object.keys(dailySales).sort((a,b) => a - b);
+      const values = days.map(d => dailySales[d]);
 
       if (salesChart) salesChart.destroy();
       salesChart = new Chart(salesChartCtx, {
@@ -206,29 +300,47 @@
           datasets: [{
             label: 'දිනපතා විකුණුම්',
             data: values,
-            borderColor: '#1565c0',
-            backgroundColor: 'rgba(21,101,192,0.2)',
+            borderColor: '#2563eb',
+            backgroundColor: 'rgba(37, 99, 235, 0.3)',
             fill: true,
-            tension: 0.2
+            tension: 0.3,
+            pointRadius: 5,
+            pointHoverRadius: 7
           }]
         },
         options: {
           responsive: true,
           plugins: {
             legend: { display: true }
+          },
+          interaction: {
+            mode: 'nearest',
+            axis: 'x',
+            intersect: false
+          },
+          animation: {
+            duration: 1200,
+            easing: 'easeOutQuart'
           }
         }
       });
     }
 
+    // Clear filters button
+    clearFiltersBtn.addEventListener('click', () => {
+      yearSelect.value = '';
+      monthSelect.value = '';
+      updateReport();
+    });
+
     yearSelect.addEventListener('change', updateReport);
     monthSelect.addEventListener('change', updateReport);
 
-    if (years.length > 0) {
-      yearSelect.value = years[years.length - 1];
-      monthSelect.value = new Date().getMonth() + 1;
-      updateReport();
-    }
+    // Initialize selects and report
+    populateYears();
+    populateMonths();
+
+    updateReport();
   </script>
 </body>
 </html>

@@ -3,23 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>තොග අවසන් වූ නිෂ්පාදන</title>
+  <title>අඩු තොග නිෂ්පාදන</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background-color: #e6f0ff;
+      background-color: #f1f8ff;
       margin: 0;
       height: 100%;
-      padding: 15px;
+      padding: 16px;
     }
 
     .container {
       max-width: 1000px;
       margin: auto;
       background: #ffffff;
-      padding: 25px;
+      padding: 24px;
       border-radius: 15px;
-      box-shadow: 0 5px 15px rgba(0, 123, 255, 0.15);
+      box-shadow: 0 4px 12px rgba(0, 123, 255, 0.1);
     }
 
     h1 {
@@ -30,9 +30,9 @@
 
     input[type="search"] {
       width: 100%;
-      padding: 12px;
+      padding: 10px;
       font-size: 1rem;
-      border: 1px solid #bbb;
+      border: 1px solid #ccc;
       border-radius: 8px;
       margin-bottom: 15px;
     }
@@ -50,12 +50,12 @@
     }
 
     th {
-      background-color: #1565c0;
+      background-color: #0277bd;
       color: white;
     }
 
     .update-btn {
-      background-color: #009688;
+      background-color: #43a047;
       color: white;
       border: none;
       padding: 6px 14px;
@@ -64,7 +64,7 @@
     }
 
     .update-btn:hover {
-      background-color: #00695c;
+      background-color: #2e7d32;
     }
 
     .modal {
@@ -146,9 +146,8 @@
 </head>
 <body>
   <div class="container">
-    <h1>තොග අවසන් වූ නිෂ්පාදන</h1>
-
-    <input type="search" id="searchInput" placeholder="නිෂ්පාදන නම සෙවීමට..." />
+    <h1>අඩු තොග නිෂ්පාදන</h1>
+    <input type="search" id="searchInput" placeholder="නිෂ්පාදන නම සෙවීම..." />
 
     <table>
       <thead>
@@ -159,20 +158,19 @@
           <th>යාවත්කාලීන</th>
         </tr>
       </thead>
-      <tbody id="productTableBody"></tbody>
+      <tbody id="lowStockTableBody"></tbody>
     </table>
   </div>
 
-  <!-- Modal -->
   <div class="modal" id="modal">
     <div class="modal-content">
-      <h2>තොරතුරු යාවත්කාලීන</h2>
+      <h2>යාවත්කාලීන කරන්න</h2>
       <input type="hidden" id="editId" />
       <label>නිෂ්පාදන නම</label>
       <input type="text" id="editName" disabled />
-      <label>තොග ප්‍රමාණය</label>
+      <label>තොගය</label>
       <input type="number" id="editQty" min="1" />
-      <label>මිල (Cost)</label>
+      <label>මිල</label>
       <input type="number" id="editCost" min="0" step="0.01" />
       <div style="text-align: right;">
         <button class="save-btn" onclick="saveUpdate()">Save</button>
@@ -183,9 +181,7 @@
 
   <script>
     let products = JSON.parse(localStorage.getItem('products') || '[]');
-    let outOfStock = JSON.parse(localStorage.getItem('outOfStockProducts') || '[]');
-
-    const tableBody = document.getElementById("productTableBody");
+    const tableBody = document.getElementById("lowStockTableBody");
     const searchInput = document.getElementById("searchInput");
 
     const modal = document.getElementById("modal");
@@ -194,11 +190,15 @@
     const editQty = document.getElementById("editQty");
     const editCost = document.getElementById("editCost");
 
+    function getLowStockProducts() {
+      return products.filter(p => p.quantity <= 5);
+    }
+
     function renderTable(data) {
       tableBody.innerHTML = '';
 
       if (data.length === 0) {
-        tableBody.innerHTML = `<tr><td colspan="4">අයිතම නැත</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="4">අඩු තොගයක් නොමැත</td></tr>`;
         return;
       }
 
@@ -206,8 +206,8 @@
         tableBody.innerHTML += `
           <tr>
             <td>${p.productName || p.name}</td>
-            <td>${p.quantity || 0}</td>
-            <td>${p.costPrice || '-'}</td>
+            <td>${p.quantity}</td>
+            <td>${p.costPrice}</td>
             <td><button class="update-btn" onclick="openModal('${p.id}')">Update</button></td>
           </tr>
         `;
@@ -215,12 +215,12 @@
     }
 
     function openModal(id) {
-      const p = outOfStock.find(p => p.id === id);
+      const p = products.find(p => p.id === id);
       if (!p) return;
 
       editId.value = p.id;
       editName.value = p.productName || p.name;
-      editQty.value = p.quantity || 0;
+      editQty.value = p.quantity;
       editCost.value = p.costPrice || '';
 
       modal.style.display = "block";
@@ -236,29 +236,24 @@
       const cost = parseFloat(editCost.value);
 
       if (!qty || qty <= 0 || isNaN(cost)) {
-        alert("නිවැරදි තොරතුරු ඇතුළත් කරන්න");
+        alert("නිවැරදි දත්ත ඇතුළත් කරන්න");
         return;
       }
 
-      const outIndex = outOfStock.findIndex(p => p.id === id);
-      if (outIndex !== -1) {
-        let updated = outOfStock[outIndex];
-        updated.quantity = qty;
-        updated.costPrice = cost;
-
-        products.push(updated);
-        outOfStock.splice(outIndex, 1);
+      const index = products.findIndex(p => p.id === id);
+      if (index !== -1) {
+        products[index].quantity = qty;
+        products[index].costPrice = cost;
       }
 
       localStorage.setItem("products", JSON.stringify(products));
-      localStorage.setItem("outOfStockProducts", JSON.stringify(outOfStock));
       closeModal();
       filterAndRender();
     }
 
     function filterAndRender() {
       const keyword = searchInput.value.toLowerCase();
-      const filtered = outOfStock.filter(p => (p.productName || p.name).toLowerCase().includes(keyword));
+      const filtered = getLowStockProducts().filter(p => (p.productName || p.name).toLowerCase().includes(keyword));
       renderTable(filtered);
     }
 
