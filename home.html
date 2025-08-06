@@ -36,13 +36,9 @@
       background-color: var(--bg);
       color: var(--text);
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
       line-height: 1.5;
-      transition: background 0.3s, color 0.3s;
     }
 
-    /* Updated header styles with vertical buttons */
     .main-header {
       background-color: var(--header);
       color: #fff;
@@ -50,16 +46,8 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
       gap: 15px;
-    }
-
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 24px;
+      flex-wrap: wrap;
     }
 
     .main-header h1 {
@@ -67,12 +55,10 @@
       font-weight: 700;
     }
 
-    /* New wrapper for vertical buttons on right side */
     .header-right {
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
       gap: 12px;
-      justify-content: center;
     }
 
     button.refresh-btn,
@@ -86,8 +72,6 @@
       font-weight: 700;
       font-size: 1rem;
       transition: background-color 0.3s ease;
-      user-select: none;
-      min-width: 110px;
     }
 
     button.refresh-btn:hover,
@@ -199,31 +183,30 @@
       color: white;
       text-align: center;
       padding: 15px;
-      margin-top: auto;
+      margin-top: 60px;
     }
 
-    /* Fixed Floating Action Button */
     .fab {
       position: fixed;
-      bottom: 25px;
-      right: 25px;
-      background-color: var(--header);
+      bottom: 20px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      background: var(--header);
       color: white;
-      border-radius: 50%;
-      width: 70px;
-      height: 70px;
+      font-size: 34px;
       display: flex;
-      justify-content: center;
       align-items: center;
-      font-size: 40px;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+      justify-content: center;
+      border-radius: 50%;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
       cursor: pointer;
+      z-index: 9999;
       transition: background-color 0.3s ease;
-      z-index: 1100;
     }
 
     .fab:hover {
-      background-color: #0d47a1; /* Darker shade on hover */
+      background-color: #0d47a1;
     }
 
     @media (max-width: 768px) {
@@ -231,21 +214,12 @@
         grid-template-columns: 1fr;
         gap: 18px;
       }
-      .main-header {
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 10px;
-      }
-      .header-left {
-        justify-content: center;
-        gap: 12px;
-      }
+
       .header-right {
-        flex-direction: row;
-        gap: 12px;
-        justify-content: center;
-        width: 100%;
+        flex-direction: column;
+        align-items: flex-start;
       }
+
       button.refresh-btn,
       button.toggle-theme {
         min-width: auto;
@@ -257,11 +231,9 @@
 </head>
 <body>
   <header class="main-header">
-    <div class="header-left">
-      <h1>📊 Smart Billing Dashboard</h1>
-    </div>
+    <h1>📊 Smart Billing Dashboard</h1>
     <div class="header-right">
-      <button class="refresh-btn" title="Refresh Page" onclick="location.reload()">⟳ නැවත ලෝඩ් කරන්න</button>
+      <button class="refresh-btn" onclick="location.reload()">⟳ නැවත ලෝඩ් කරන්න</button>
       <button class="toggle-theme" onclick="toggleTheme()">🌙 Mode</button>
     </div>
   </header>
@@ -307,7 +279,7 @@
     <p>&copy; 2025 Smart Billing System</p>
   </footer>
 
-  <!-- Fixed Floating Action Button to Bill Create (Bigger size) -->
+  
   <div class="fab" title="නව බිල්පතක් තනන්න" onclick="location.href='billCreate.html'">＋</div>
 
   <script>
