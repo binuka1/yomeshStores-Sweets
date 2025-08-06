@@ -111,6 +111,10 @@
       background-color: #1565c0;
       transform: translateY(-3px);
     }
+     .action-btn1:hover {
+      background-color: #1565c0;
+      transform: translateY(-3px);
+    }
     /* Product List Table */
     .product-list-section {
       overflow-x: auto;
@@ -215,6 +219,22 @@
     .close-btn:hover {
       color: #d32f2f;
     }
+
+    .action-btn1 {
+      background-color: #1976d2;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 1.1rem;
+      box-shadow: 0 5px 15px rgb(25 118 210 / 0.5);
+      transition: background-color 0.3s ease, transform 0.25s ease;
+      user-select: none;
+      margin-top: 15px;
+      width: 220px;
+    }
   </style>
 </head>
 <body>
@@ -223,6 +243,8 @@
     <button class="logout-btn" id="logoutBtn">Logout</button>
   </header>
 
+  <center><button class="action-btn1" onclick="location.href='outOfStock.html'">reports</button>
+</center>
   <main class="container">
     <!-- Add Product Form -->
     <section class="add-product-section">

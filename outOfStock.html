@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>තොග අවසන් වූ නිෂ්පාදන</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #e6f2ff;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 950px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 6px 20px rgba(0, 123, 255, 0.2);
+    }
+
+    h1 {
+      text-align: center;
+      color: #1565c0;
+      margin-bottom: 25px;
+    }
+
+    button.update-btn {
+      background-color: #388e3c;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    button.update-btn:hover {
+      background-color: #2e7d32;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+      margin-bottom: 20px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #0288d1;
+      color: white;
+    }
+
+    td {
+      background-color: #fefefe;
+    }
+
+    .no-data {
+      text-align: center;
+      color: #999;
+      margin-top: 20px;
+      font-size: 1.1rem;
+    }
+
+    /* Popup styles */
+    .popup-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    .popup-box {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    }
+
+    .popup-box h2 {
+      margin-bottom: 15px;
+      color: #1565c0;
+    }
+
+    .popup-box label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    .popup-box input {
+      width: 100%;
+      padding: 10px;
+      font-size: 1rem;
+      margin-top: 5px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    .popup-box button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 10px;
+      background-color: #0288d1;
+      color: white;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .popup-box button:hover {
+      background-color: #01579b;
+    }
+
+    @media (max-width: 768px) {
+      table, th, td {
+        font-size: 0.85rem;
+      }
+
+      .container {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>තොග අවසන් වූ නිෂ්පාදන</h1>
+
+    <!-- Button for Low Stock -->
+    <button onclick="showLowStock()" class="update-btn">අඩු තොග ඇති නිෂ්පාදන</button>
+
+    <!-- Out Of Stock Table -->
+    <table id="outOfStockTable">
+      <thead>
+        <tr>
+          <th>නිෂ්පාදන නම</th>
+          <th>තොගය</th>
+          <th>අලුත් කිරීම</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <p id="noDataMessage" class="no-data" style="display: none;">තොග අවසන් වූ අයිතම නැත.</p>
+  </div>
+
+  <!-- Popup for Updating Stock -->
+  <div class="popup-overlay" id="popup">
+    <div class="popup-box">
+      <h2>තොගය යාවත්කාලීන කරන්න</h2>
+      <label>නිෂ්පාදන නම</label>
+      <input type="text" id="productName" disabled />
+      <label>නව තොග ප්‍රමාණය</label>
+      <input type="number" id="newQty" min="1" />
+      <label>නව මිල ගණන් (Cost Price)</label>
+      <input type="number" id="newCost" step="0.01" min="0" />
+      <label>අවසන් වීමේ දිනය</label>
+      <input type="date" id="newExpire" />
+      <button onclick="saveUpdatedStock()">අලුත් කරන්න</button>
+    </div>
+  </div>
+
+  <!-- Popup for Low Stock List -->
+  <div class="popup-overlay" id="lowStockPopup">
+    <div class="popup-box" style="max-height: 90vh; overflow-y: auto;">
+      <h2>අඩු තොග ඇති නිෂ්පාදන</h2>
+      <table style="width:100%; font-size: 0.9rem; margin-top: 10px;">
+        <thead>
+          <tr>
+            <th>නිෂ්පාදනය</th>
+            <th>තොගය</th>
+            <th>Update</th>
+          </tr>
+        </thead>
+        <tbody id="lowStockTable"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const outStockTableBody = document.querySelector("#outOfStockTable tbody");
+    const noDataMessage = document.getElementById("noDataMessage");
+    const popup = document.getElementById("popup");
+    const productNameInput = document.getElementById("productName");
+    const qtyInput = document.getElementById("newQty");
+    const costInput = document.getElementById("newCost");
+    const expireInput = document.getElementById("newExpire");
+
+    const lowStockPopup = document.getElementById("lowStockPopup");
+    const lowStockTable = document.getElementById("lowStockTable");
+
+    let outOfStock = JSON.parse(localStorage.getItem('outOfStockProducts') || '[]');
+    let products = JSON.parse(localStorage.getItem('products') || '[]');
+
+    let currentProductId = null;
+
+    function renderOutOfStockTable() {
+      outStockTableBody.innerHTML = "";
+      if (outOfStock.length === 0) {
+        noDataMessage.style.display = "block";
+        return;
+      } else {
+        noDataMessage.style.display = "none";
+      }
+
+      outOfStock.forEach(p => {
+        outStockTableBody.innerHTML += `
+          <tr>
+            <td>${p.productName || p.name}</td>
+            <td>${p.quantity}</td>
+            <td><button class="update-btn" onclick="openPopup('${p.id}')">Update</button></td>
+          </tr>`;
+      });
+    }
+
+    function openPopup(id) {
+      currentProductId = id;
+      const product = products.find(p => p.id === id) || outOfStock.find(p => p.id === id);
+
+      if (!product) {
+        alert("නිෂ්පාදනය හමු නොවීය");
+        return;
+      }
+
+      productNameInput.value = product.productName || product.name || "";
+      qtyInput.value = product.quantity || "";
+      costInput.value = product.costPrice || "";
+      expireInput.value = product.expireDate || "";
+
+      popup.style.display = "flex";
+    }
+
+    function saveUpdatedStock() {
+      const qty = parseInt(qtyInput.value);
+      const cost = parseFloat(costInput.value);
+      const expire = expireInput.value;
+
+      if (!qty || isNaN(cost) || !expire) {
+        alert("කරුණාකර සියලු තොරතුරු පුරවන්න");
+        return;
+      }
+
+      // Update product in products array
+      const prodIndex = products.findIndex(p => p.id === currentProductId);
+      if (prodIndex !== -1) {
+        products[prodIndex].quantity = qty;
+        products[prodIndex].costPrice = cost;
+        products[prodIndex].expireDate = expire;
+      } else {
+        // If product not in products, add it from outOfStock with new data
+        const outProdIndex = outOfStock.findIndex(p => p.id === currentProductId);
+        if (outProdIndex !== -1) {
+          const updatedProd = {...outOfStock[outProdIndex]};
+          updatedProd.quantity = qty;
+          updatedProd.costPrice = cost;
+          updatedProd.expireDate = expire;
+
+          products.push(updatedProd);
+          // Remove from outOfStock
+          outOfStock.splice(outProdIndex, 1);
+        }
+      }
+
+      // If product quantity updated above 0 and exists in outOfStock, remove it
+      outOfStock = outOfStock.filter(p => p.quantity <= 0);
+
+      localStorage.setItem('products', JSON.stringify(products));
+      localStorage.setItem('outOfStockProducts', JSON.stringify(outOfStock));
+
+      popup.style.display = "none";
+      renderOutOfStockTable();
+      alert("තොගය යාවත්කාලීන කරන ලදී!");
+    }
+
+    function showLowStock() {
+      const lowStockItems = products.filter(p => p.quantity < 5 && p.quantity > 0);
+      lowStockTable.innerHTML = "";
+
+      if (lowStockItems.length === 0) {
+        lowStockTable.innerHTML = `<tr><td colspan="3">අඩු තොග ඇති නිෂ්පාදන නොමැත</td></tr>`;
+      } else {
+        lowStockItems.forEach(p => {
+          lowStockTable.innerHTML += `
+            <tr>
+              <td>${p.productName || p.name}</td>
+              <td>${p.quantity}</td>
+              <td><button class="update-btn" onclick="openPopup('${p.id}')">Update</button></td>
+            </tr>
+          `;
+        });
+      }
+
+      lowStockPopup.style.display = "flex";
+    }
+
+    // Close popup on outside click
+    popup.addEventListener("click", e => {
+      if (e.target === popup) popup.style.display = "none";
+    });
+
+    lowStockPopup.addEventListener("click", e => {
+      if (e.target === lowStockPopup) lowStockPopup.style.display = "none";
+    });
+
+    renderOutOfStockTable();
+  </script>
+</body>
+</html>
