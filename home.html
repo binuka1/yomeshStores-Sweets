@@ -36,7 +36,11 @@
       background-color: var(--bg);
       color: var(--text);
       min-height: 100vh;
+      display: flex;
+      flex-direction: column;
       line-height: 1.5;
+      padding-bottom: 30px;
+      transition: background 0.3s, color 0.3s;
     }
 
     .main-header {
@@ -46,8 +50,15 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 15px;
-      flex-wrap: wrap;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
     }
 
     .main-header h1 {
@@ -55,27 +66,33 @@
       font-weight: 700;
     }
 
-    .header-right {
-      display: flex;
-      flex-direction: row;
-      gap: 12px;
-    }
-
-    button.refresh-btn,
-    button.toggle-theme {
+    .toggle-theme {
       background: none;
       border: 2px solid #fff;
       color: #fff;
-      padding: 8px 16px;
+      padding: 6px 12px;
       border-radius: 8px;
       cursor: pointer;
       font-weight: 700;
-      font-size: 1rem;
       transition: background-color 0.3s ease;
     }
 
-    button.refresh-btn:hover,
-    button.toggle-theme:hover {
+    .toggle-theme:hover {
+      background-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .refresh-btn {
+      background: none;
+      border: 2px solid #fff;
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: background-color 0.3s ease;
+    }
+
+    .refresh-btn:hover {
       background-color: rgba(255, 255, 255, 0.15);
     }
 
@@ -183,30 +200,32 @@
       color: white;
       text-align: center;
       padding: 15px;
-      margin-top: 60px;
+      margin-top: auto;
     }
 
+    /* Fixed Floating Action Button */
     .fab {
       position: fixed;
-      bottom: 20px;
-      right: 20px;
-      width: 60px;
-      height: 60px;
-      background: var(--header);
+      bottom: 25px;
+      right: 25px;
+      background-color: var(--header);
       color: white;
-      font-size: 34px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       border-radius: 50%;
+      width: 66px;
+      height: 66px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 32px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
       cursor: pointer;
-      z-index: 9999;
       transition: background-color 0.3s ease;
+      z-index: 1700;
     }
 
     .fab:hover {
-      background-color: #0d47a1;
+      background-color: #0d47a1; /* Darker shade on hover */
     }
 
     @media (max-width: 768px) {
@@ -214,28 +233,16 @@
         grid-template-columns: 1fr;
         gap: 18px;
       }
-
-      .header-right {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      button.refresh-btn,
-      button.toggle-theme {
-        min-width: auto;
-        padding: 8px 12px;
-        font-size: 0.9rem;
-      }
     }
   </style>
 </head>
 <body>
   <header class="main-header">
-    <h1>📊 Smart Billing Dashboard</h1>
-    <div class="header-right">
-      <button class="refresh-btn" onclick="location.reload()">⟳ නැවත ලෝඩ් කරන්න</button>
-      <button class="toggle-theme" onclick="toggleTheme()">🌙 Mode</button>
+    <div class="header-left">
+      <h1>📊 Smart Billing Dashboard</h1>
+      <button class="refresh-btn" title="Refresh Page" onclick="location.reload()">⟳</button>
     </div>
+    <button class="toggle-theme" onclick="toggleTheme()">🌙 Mode</button>
   </header>
 
   <div class="container">
@@ -279,9 +286,10 @@
     <p>&copy; 2025 Smart Billing System</p>
   </footer>
 
-  
+  <!-- Fixed Floating Action Button to Bill Create -->
   <div class="fab" title="නව බිල්පතක් තනන්න" onclick="location.href='billCreate.html'">＋</div>
 
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     const user = JSON.parse(localStorage.getItem('loggedInUser')) || { username: 'පරිශීලකයා' };
     document.getElementById('welcomeMsg').textContent = `👋 ආයුබෝවන් ${user.username}!`;
