@@ -5,39 +5,41 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>බිල්පත සාදන්න</title>
   <style>
-    /* your existing CSS remains unchanged */
     body {
       font-family: 'Segoe UI', Tahoma, sans-serif;
       background: #e6f0ff;
       margin: 0;
-      margin-bottom: 20px;
-      padding: 17px;
+      padding: 17px 12px 30px 12px;
       color: #222;
     }
 
     .container {
-      max-width: 950px;
-      margin: 30px auto;
+      max-width: 480px;
+      margin: 20px auto;
       background: #ffffff;
       border-radius: 20px;
-      padding: 30px;
-      box-shadow: 0 6px 20px rgba(0, 123, 255, 0.2);
+      padding: 25px 20px;
+      box-shadow: 0 6px 20px rgba(0, 123, 255, 0.15);
     }
 
     h1, h2 {
       color: #1565c0;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
+      font-weight: 700;
     }
 
     button.action-btn {
       background-color: #0288d1;
       color: #fff;
       border: none;
-      padding: 12px 20px;
-      border-radius: 10px;
-      font-size: 1.05rem;
+      padding: 14px 0;
+      border-radius: 12px;
+      font-size: 1.15rem;
       cursor: pointer;
-      margin-top: 12px;
+      margin-top: 15px;
+      width: 100%;
+      box-shadow: 0 3px 8px rgba(2, 136, 209, 0.6);
+      transition: background-color 0.3s ease;
     }
 
     button.action-btn:hover:not(:disabled) {
@@ -47,45 +49,74 @@
     button.action-btn:disabled {
       background-color: #b0d5f1;
       cursor: not-allowed;
+      box-shadow: none;
     }
 
     label {
       display: block;
-      margin-top: 15px;
-      margin-bottom: 2px;
-      font-weight: bold;
+      margin-top: 14px;
+      margin-bottom: 6px;
+      font-weight: 600;
+      font-size: 1.05rem;
+      color: #0d47a1;
     }
 
     select,
     input[type="number"] {
       width: 100%;
-      padding: 12px 14px;
-      font-size: 1rem;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-      background-color: #f9fcff;
+      padding: 14px 16px;
+      font-size: 1.1rem;
+      border-radius: 12px;
+      border: 1.8px solid #90caf9;
+      background-color: #f0f7ff;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease;
     }
 
-    table {
+    select:focus,
+    input[type="number"]:focus {
+      border-color: #1565c0;
+      outline: none;
+      background-color: #e3f2fd;
+    }
+
+    /* Overflow fix and scroll for bill table */
+    #billTable, #returnTable {
+      display: block;
       width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border-radius: 12px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.07);
+      margin-top: 18px;
+      font-size: 1rem;
       border-collapse: collapse;
-      margin-top: 10px;
-      font-size: 0.95rem;
+    }
+
+    #billTable thead, #returnTable thead,
+    #billTable tbody, #returnTable tbody {
+      display: table;
+      width: 100%;
+      table-layout: fixed;
     }
 
     th, td {
-      border: 1px solid #e0e0e0;
-      padding: 12px 10px;
+      border: none;
+      padding: 12px 8px;
       text-align: center;
+      word-wrap: break-word;
     }
 
     th {
       background-color: #0288d1;
       color: white;
+      font-weight: 600;
+      letter-spacing: 0.05em;
     }
 
     td {
-      background-color: #fefefe;
+      background-color: #fafafa;
+      border-bottom: 1px solid #ddd;
     }
 
     button.removeBillItemBtn,
@@ -93,101 +124,130 @@
       background-color: #e53935;
       border: none;
       color: white;
-      padding: 7px 12px;
-      border-radius: 8px;
+      padding: 9px 14px;
+      border-radius: 14px;
       cursor: pointer;
+      font-weight: 700;
+      font-size: 0.9rem;
+      transition: background-color 0.3s ease;
+    }
+
+    button.removeBillItemBtn:hover,
+    button.removeReturnItemBtn:hover {
+      background-color: #ab000d;
     }
 
     section.bill-summary {
       margin-top: 30px;
       background: #e3f2fd;
       padding: 20px;
-      border-radius: 12px;
+      border-radius: 16px;
+      font-weight: 700;
+      color: #01579b;
+      font-size: 1.2rem;
+      box-shadow: inset 0 0 12px #90caf9;
     }
 
     section.bill-summary p {
-      font-size: 1.2rem;
-      font-weight: 700;
       margin: 10px 0;
-      color: #01579b;
-    }
-
-    @media (max-width: 768px) {
-      .container {
-        padding: 20px;
-        margin: 15px;
-      }
-
-      h1, h2 {
-        font-size: 1.4rem;
-      }
-
-      button.action-btn {
-        width: 100%;
-        font-size: 1rem;
-      }
-
-      table, th, td {
-        font-size: 0.85rem;
-      }
     }
 
     #saveBillBtn {
-      margin-top: 15px;
-      padding: 12px;
+      margin-top: 25px;
+      padding: 16px;
       background-color: #388e3c;
       color: white;
       border: none;
-      border-radius: 10px;
+      border-radius: 14px;
       width: 100%;
+      font-size: 1.15rem;
+      font-weight: 700;
+      box-shadow: 0 5px 14px rgba(56, 142, 60, 0.7);
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    #saveBillBtn:hover:not(:disabled) {
+      background-color: #2e7d32;
+    }
+
+    #saveBillBtn:disabled {
+      background-color: #a5d6a7;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    /* Responsive for very small screens */
+    @media (max-width: 400px) {
+      body {
+        padding: 12px 8px 20px 8px;
+      }
+
+      h1, h2 {
+        font-size: 1.25rem;
+      }
+
+      button.action-btn, #saveBillBtn {
+        font-size: 1rem;
+        padding: 14px 0;
+      }
+
+      th, td {
+        font-size: 0.85rem;
+        padding: 8px 5px;
+      }
     }
   </style>
 </head>
 <body>
+  <div class="container">
+    <h1>බිල්පත සාදන්න</h1>
 
-  <h1>බිල්පත සාදන්න</h1>
+    <label>කඩය තෝරන්න</label>
+    <select id="storeSelect"><option value="">-- තෝරන්න --</option></select>
 
-  <label>කඩය තෝරන්න</label>
-  <select id="storeSelect"><option value="">-- තෝරන්න --</option></select>
+    <label>නිෂ්පාදනය තෝරන්න</label>
+    <select id="productSelect" disabled><option value="">-- තෝරන්න --</option></select>
 
-  <label>නිෂ්පාදනය තෝරන්න</label>
-  <select id="productSelect" disabled><option value="">-- තෝරන්න --</option></select>
+    <label>ප්‍රමාණය</label>
+    <input type="number" id="qtyInput" disabled min="1" value="1" />
 
-  <label>ප්‍රමාණය</label>
-  <input type="number" id="qtyInput" disabled min="1" value="1" />
+    <label>විකුණුම් මිල</label>
+    <input type="number" id="priceInput" disabled min="0" step="0.01" />
 
-  <label>විකුණුම් මිල</label>
-  <input type="number" id="priceInput" disabled min="0" step="0.01" />
+    <button id="addItemBtn" disabled class="action-btn">අයිතමය එක් කරන්න</button>
 
-  <button id="addItemBtn" disabled>අයිතමය එක් කරන්න</button>
+    <h2>බිල් අයිතම</h2>
+    <table id="billTable">
+      <thead><tr><th>නිෂ්පාදනය</th><th>ප්‍රමාණය</th><th>මිල</th><th>මුළු</th><th>ඉවත්</th></tr></thead>
+      <tbody></tbody>
+    </table>
 
-  <h2>බිල් අයිතම</h2>
-  <table id="billTable">
-    <thead><tr><th>නිෂ්පාදනය</th><th>ප්‍රමාණය</th><th>මිල</th><th>මුළු</th><th>ඉවත්</th></tr></thead>
-    <tbody></tbody>
-  </table>
+    <h2>ආපසු අයිතම</h2>
+    <label>අයිතමය තෝරන්න</label>
+    <select id="returnSelect" disabled><option value="">-- තෝරන්න --</option></select>
 
-  <h2>ආපසු අයිතම</h2>
-  <label>අයිතමය තෝරන්න</label>
-  <select id="returnSelect" disabled><option value="">-- තෝරන්න --</option></select>
+    <label>වටිනාකම</label>
+    <input type="number" id="returnPriceInput" disabled min="0" step="0.01" />
 
-  <label>වටිනාකම</label>
-  <input type="number" id="returnPriceInput" disabled min="0" step="0.01" />
+    <button id="addReturnBtn" disabled class="action-btn">ආපසු අයිතමය එක් කරන්න</button>
 
-  <button id="addReturnBtn" disabled>ආපසු අයිතමය එක් කරන්න</button>
+    <table id="returnTable">
+      <thead><tr><th>අයිතමය</th><th>වටිනාකම</th><th>ඉවත්</th></tr></thead>
+      <tbody></tbody>
+    </table>
 
-  <table id="returnTable">
-    <thead><tr><th>අයිතමය</th><th>වටිනාකම</th><th>ඉවත්</th></tr></thead>
-    <tbody></tbody>
-  </table>
+    <section class="bill-summary">
+      <p>මුළු මුදල: Rs. <span id="totalAmount">0.00</span></p>
+      <p>ආපසු මුදල: Rs. <span id="returnAmount">0.00</span></p>
+      <p>අවසන් මුදල: Rs. <span id="netAmount">0.00</span></p>
+    </section>
 
-  <h3>මුළු මුදල: Rs. <span id="totalAmount">0.00</span></h3>
-  <h3>ආපසු මුදල: Rs. <span id="returnAmount">0.00</span></h3>
-  <h3>අවසන් මුදල: Rs. <span id="netAmount">0.00</span></h3>
-
-  <button id="saveBillBtn" disabled>බිල්පත සුරකින්න</button>
+    <button id="saveBillBtn" disabled>බිල්පත සුරකින්න</button>
+  </div>
 
   <script>
+    // ඔයාගේ තියෙන JS එක මෙහෙම තියෙනවා, වෙනස් කරන එකක් නෑ.
     let stores = JSON.parse(localStorage.getItem('stores') || '[]');
     let products = JSON.parse(localStorage.getItem('products') || '[]');
     let bills = JSON.parse(localStorage.getItem('bills') || '[]');
@@ -353,7 +413,6 @@
       const storeId = storeSelect.value;
       if (!storeId || billItems.length === 0) return alert('කරුණාකර තොරතුරු පුරවන්න');
 
-      // ➕ Update stock & handle out-of-stock
       billItems.forEach(i => {
         const index = products.findIndex(p => p.id === i.id);
         if (index !== -1) {
@@ -368,7 +427,6 @@
       localStorage.setItem('products', JSON.stringify(products));
       localStorage.setItem('outOfStockProducts', JSON.stringify(outOfStockProducts));
 
-      // ➕ Profit calculation
       let profit = 0;
       billItems.forEach(i => {
         const p = products.find(p => p.id === i.id);
@@ -395,7 +453,6 @@
       bills.push(bill);
       localStorage.setItem('bills', JSON.stringify(bills));
 
-      // ➕ Returns
       let returns = JSON.parse(localStorage.getItem('returns') || '[]');
       if (returnItems.length > 0) {
         returns.push({
@@ -408,14 +465,12 @@
         localStorage.setItem('returns', JSON.stringify(returns));
       }
 
-      // ➕ Monthly profit
       const month = new Date().toISOString().slice(0,7);
       let profits = JSON.parse(localStorage.getItem('monthlyProfits') || '{}');
       if (!profits[month]) profits[month] = 0;
       profits[month] += profit;
       localStorage.setItem('monthlyProfits', JSON.stringify(profits));
 
-      // ➕ Store rank
       let storeRanks = JSON.parse(localStorage.getItem('storeRanks') || '{}');
       if (!storeRanks[storeId]) storeRanks[storeId] = 0;
       storeRanks[storeId] += profit;
@@ -423,7 +478,6 @@
 
       alert('බිල්පත සුරකින්න ලදි');
 
-      // Reset
       storeSelect.value = '';
       billItems = [];
       returnItems = [];
