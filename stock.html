@@ -235,6 +235,16 @@
       margin-top: 15px;
       width: 220px;
     }
+
+    /* Search input styling */
+    #searchInput {
+      margin-bottom: 15px;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1.5px solid #ccc;
+      width: 100%;
+      font-size: 1rem;
+    }
   </style>
 </head>
 <body>
@@ -243,9 +253,11 @@
     <button class="logout-btn" id="logoutBtn">Logout</button>
   </header>
 
-  <center><button class="action-btn1" onclick="location.href='outOfStock.html'">Out of stock</button>
+  <center>
+    <button class="action-btn1" onclick="location.href='outOfStock.html'">Out of stock</button>
     <button class="action-btn1" onclick="location.href='lowstock.html'">Low stock</button>
-</center>
+  </center>
+
   <main class="container">
     <!-- Add Product Form -->
     <section class="add-product-section">
@@ -278,6 +290,10 @@
     <!-- Product List Table -->
     <section class="product-list-section">
       <h2>නිෂ්පාදන ලැයිස්තුව</h2>
+
+      <!-- Search bar added here -->
+      <input type="text" id="searchInput" placeholder="නිෂ්පාදන නම අනුව සෙවීම..." />
+
       <table class="responsive-table" id="productTable">
         <thead>
           <tr>
@@ -330,6 +346,7 @@
   // Get references
   const productForm = document.getElementById('addProductForm');
   const productTableBody = document.getElementById('productTableBody');
+  const searchInput = document.getElementById('searchInput');
 
   const editModal = document.getElementById('editModal');
   const closeEditModalBtn = document.getElementById('closeEditModal');
@@ -352,16 +369,25 @@
     localStorage.setItem('products', JSON.stringify(products));
   }
 
-  // Render product list table
+  // Render product list table with search filter
   function renderProductTable() {
+    const filterText = searchInput.value.trim().toLowerCase();
+
     productTableBody.innerHTML = '';
 
-    if (products.length === 0) {
+    let filteredProducts = products;
+    if (filterText !== '') {
+      filteredProducts = products.filter(product =>
+        product.productName.toLowerCase().includes(filterText)
+      );
+    }
+
+    if (filteredProducts.length === 0) {
       productTableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 20px;">කිසිඳු නිෂ්පාදන නොමැත</td></tr>`;
       return;
     }
 
-    products.forEach((product, index) => {
+    filteredProducts.forEach((product, index) => {
       const tr = document.createElement('tr');
       tr.innerHTML = `
         <td data-label="නිෂ්පාදන නම">${product.productName}</td>
@@ -424,10 +450,8 @@
       return;
     }
 
-    const oldId = products[editIndex].id || Date.now().toString();
-
     products[editIndex] = {
-      id: oldId,
+      id: products[editIndex].id || Date.now().toString(),
       productName: editProductForm.editProductName.value.trim(),
       quantity: parseInt(editProductForm.editQuantity.value),
       costPrice: parseFloat(editProductForm.editCostPrice.value),
@@ -454,7 +478,7 @@
     }
 
     const newProduct = {
-      id: Date.now().toString(), // ✅ Unique ID
+      id: Date.now().toString(),
       productName,
       quantity,
       costPrice,
@@ -474,12 +498,10 @@
   });
 
   // Initialize
-  loadProducts();
+  window.onload = loadProducts;
 
-  // Expose functions
-  window.deleteProduct = deleteProduct;
-  window.openEditModal = openEditModal;
+  // Search input event listener
+  searchInput.addEventListener('input', renderProductTable);
 </script>
-
 </body>
 </html>
