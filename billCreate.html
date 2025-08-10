@@ -247,7 +247,6 @@
   </div>
 
   <script>
-    // ඔයාගේ තියෙන JS එක මෙහෙම තියෙනවා, වෙනස් කරන එකක් නෑ.
     let stores = JSON.parse(localStorage.getItem('stores') || '[]');
     let products = JSON.parse(localStorage.getItem('products') || '[]');
     let bills = JSON.parse(localStorage.getItem('bills') || '[]');
@@ -408,6 +407,22 @@
       returnPriceInput.disabled = !returnSelect.value;
       addReturnBtn.disabled = !returnSelect.value;
     });
+
+    // ==== ENTER KEY FUNCTION START ====
+    function enableEnterToAdd() {
+      [qtyInput, priceInput].forEach(input => {
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            if (!addItemBtn.disabled) {
+              addItemBtn.click();
+            }
+          }
+        });
+      });
+    }
+    enableEnterToAdd();
+    // ==== ENTER KEY FUNCTION END ====
 
     saveBillBtn.addEventListener('click', () => {
       const storeId = storeSelect.value;
