@@ -13,7 +13,7 @@
       font-family: 'Poppins', sans-serif;
       background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
       margin: 0;
-      padding: 20px;
+      padding: 20px 10px;
       color: #222;
       min-height: 100vh;
       display: flex;
@@ -26,9 +26,10 @@
       max-width: 1100px;
       background: #fff;
       border-radius: 20px;
-      padding: 30px 40px;
+      padding: 30px 20px;
       box-shadow: 0 15px 40px rgba(0,0,0,0.12);
       box-sizing: border-box;
+      overflow-x: hidden;
     }
 
     h1 {
@@ -42,13 +43,16 @@
 
     .filters {
       display: flex;
-      gap: 20px;
-      justify-content: center;
       flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
       margin-bottom: 40px;
     }
 
-    select, button {
+    .filters select,
+    .filters button {
+      flex: 1 1 140px;
+      min-width: 140px;
       padding: 12px 20px;
       border-radius: 12px;
       border: 1.5px solid #cbd5e1;
@@ -56,11 +60,12 @@
       cursor: pointer;
       transition: all 0.3s ease;
       background: #f9fafb;
-      min-width: 140px;
       user-select: none;
+      box-sizing: border-box;
     }
 
-    select:hover, button:hover {
+    .filters select:hover,
+    .filters button:hover {
       border-color: #2563eb;
       box-shadow: 0 0 10px #2563eb;
       background: #e0e7ff;
@@ -72,6 +77,7 @@
       color: white;
       min-width: 100px;
       font-weight: 600;
+      flex: 0 0 auto;
     }
 
     button.clear-btn:hover {
@@ -82,21 +88,22 @@
 
     .summary {
       display: flex;
-      gap: 25px;
-      justify-content: space-around;
       flex-wrap: wrap;
+      gap: 20px;
+      justify-content: space-around;
       margin-bottom: 50px;
     }
 
     .card {
-      flex: 1 1 260px;
+      flex: 1 1 220px;
       background: #e0e7ff;
-      padding: 25px 20px;
+      padding: 20px 15px;
       border-radius: 16px;
       text-align: center;
       box-shadow: 0 6px 15px rgba(30,58,138,0.12);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
       user-select: none;
+      min-width: 0;
     }
 
     .card:hover {
@@ -105,33 +112,57 @@
     }
 
     .card h3 {
-      margin-bottom: 15px;
+      font-size: 1rem;
+      margin-bottom: 12px;
       color: #1e40af;
       font-weight: 600;
-      font-size: 1.2rem;
     }
 
     .card p {
-      font-size: 2.1rem;
+      font-size: 1.8rem;
       font-weight: 700;
       color: #1e3a8a;
+      word-wrap: break-word;
     }
 
     canvas {
       width: 100% !important;
-      max-height: 450px !important;
+      max-height: 400px !important;
       margin-bottom: 50px;
       user-select: none;
+      display: block;
     }
 
     /* Responsive */
     @media (max-width: 768px) {
+      body {
+        padding: 15px 10px;
+      }
+      .container {
+        padding: 20px 15px;
+        max-width: 100%;
+      }
+      .filters select,
+      .filters button {
+        flex: 1 1 100%;
+        min-width: auto;
+      }
       .summary {
         flex-direction: column;
-        gap: 20px;
-      }
-      .filters {
         gap: 15px;
+      }
+      .card {
+        flex: 1 1 100%;
+        padding: 15px 10px;
+      }
+      h1 {
+        font-size: 2rem;
+      }
+      .card h3 {
+        font-size: 1.1rem;
+      }
+      .card p {
+        font-size: 1.6rem;
       }
     }
   </style>
@@ -143,12 +174,15 @@
     <div class="filters">
       <select id="yearSelect" aria-label="වසර තෝරන්න"></select>
       <select id="monthSelect" aria-label="මාසය තෝරන්න"></select>
-      <button class="clear-btn" id="clearFiltersBtn" title="තෝරාගත් වසර හා මාසය මකන්න">Clear Filters</button>
+      <select id="storeSelect" aria-label="කඩය තෝරන්න">
+        <option value="">-- කඩය තෝරන්න --</option>
+      </select>
+      <button class="clear-btn" id="clearFiltersBtn" title="තෝරාගත් වසර, මාසය හා කඩ මකන්න">Clear Filters</button>
     </div>
 
     <div class="summary" aria-live="polite" aria-atomic="true">
       <div class="card" role="region" aria-label="මුළු ලාභය">
-        <h3>මුළු ලාභය (ලාභය - වියදම්)</h3>
+        <h3>මුළු ලාභය (ලාභය - වියදම් - ආපසු ලැබීම්)</h3>
         <p id="netProfit">Rs. 0.00</p>
       </div>
       <div class="card" role="region" aria-label="මුළු විකුණුම්">
@@ -159,10 +193,15 @@
         <h3>මුළු වියදම්</h3>
         <p id="totalExpenses">Rs. 0.00</p>
       </div>
+      <div class="card" role="region" aria-label="මුළු ආපසු ලැබීම්">
+        <h3>මුළු ආපසු ලැබීම්</h3>
+        <p id="totalReturns">Rs. 0.00</p>
+      </div>
     </div>
 
     <canvas id="salesChart" aria-label="දිනපතා විකුණුම් වර්ගකරණය" role="img"></canvas>
     <canvas id="topItemsChart" aria-label="ඉහළ විකිණුණු අයිතම වර්ගකරණය" role="img"></canvas>
+    <canvas id="returnItemsChart" aria-label="ආපසු ලැබුණු අයිතම වර්ගකරණය" role="img"></canvas>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -170,34 +209,38 @@
     const monthNames = ['ජනවාරි','පෙබ','මාර්තු','අප්‍රේල්','මැයි','ජුනි','ජුලි','අගෝ','සැප්','ඔක්','නොවැ','දෙසැ'];
     const bills = JSON.parse(localStorage.getItem('bills') || '[]');
     const expenses = JSON.parse(localStorage.getItem('expenses') || '[]');
+    const returns = JSON.parse(localStorage.getItem('returns') || '[]');
+    const stores = JSON.parse(localStorage.getItem('stores') || '[]');
 
     const yearSelect = document.getElementById('yearSelect');
     const monthSelect = document.getElementById('monthSelect');
+    const storeSelect = document.getElementById('storeSelect');
+
     const netProfitEl = document.getElementById('netProfit');
     const totalSalesEl = document.getElementById('totalSales');
     const totalExpensesEl = document.getElementById('totalExpenses');
+    const totalReturnsEl = document.getElementById('totalReturns');
     const clearFiltersBtn = document.getElementById('clearFiltersBtn');
 
     const salesChartCtx = document.getElementById('salesChart').getContext('2d');
     const topItemsCtx = document.getElementById('topItemsChart').getContext('2d');
-    let salesChart, topItemsChart;
+    const returnItemsCtx = document.getElementById('returnItemsChart').getContext('2d');
 
-    // Load unique years from bills and expenses
-    const yearsSet = new Set([
-      ...bills.map(b => new Date(b.date).getFullYear()),
-      ...expenses.map(e => new Date(e.date).getFullYear())
-    ]);
-    const years = [...yearsSet].sort();
+    let salesChart, topItemsChart, returnItemsChart;
 
-    // Populate year dropdown
     function populateYears() {
+      const yearsSet = new Set([
+        ...bills.map(b => new Date(b.date).getFullYear()),
+        ...expenses.map(e => new Date(e.date).getFullYear()),
+        ...returns.map(r => new Date(r.date).getFullYear())
+      ]);
+      const years = [...yearsSet].sort((a,b) => a-b);
       yearSelect.innerHTML = '<option value="">-- වසර තෝරන්න --</option>';
       years.forEach(y => {
         yearSelect.innerHTML += `<option value="${y}">${y}</option>`;
       });
     }
 
-    // Populate month dropdown
     function populateMonths() {
       monthSelect.innerHTML = '<option value="">-- මාසය තෝරන්න --</option>';
       monthNames.forEach((m, i) => {
@@ -205,47 +248,74 @@
       });
     }
 
-    // Format currency nicely with commas
+    function populateStores() {
+      storeSelect.innerHTML = '<option value="">-- කඩය තෝරන්න --</option>';
+      stores.forEach(store => {
+        const name = store.storeName || store.name || 'නොදන්නා';
+        storeSelect.innerHTML += `<option value="${store.id}">${name}</option>`;
+      });
+    }
+
     function formatCurrency(amount) {
       return 'Rs. ' + amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
-    // Filter bills and expenses based on selection, or all if empty
     function filterData() {
       const year = yearSelect.value ? +yearSelect.value : null;
       const month = monthSelect.value ? +monthSelect.value : null;
+      const storeId = storeSelect.value || null;
 
       const filteredBills = bills.filter(b => {
         const d = new Date(b.date);
-        return (!year || d.getFullYear() === year) && (!month || (d.getMonth() + 1) === month);
+        return (!year || d.getFullYear() === year) &&
+               (!month || (d.getMonth() + 1) === month) &&
+               (!storeId || b.storeId === storeId);
       });
 
       const filteredExpenses = expenses.filter(e => {
         const d = new Date(e.date);
-        return (!year || d.getFullYear() === year) && (!month || (d.getMonth() + 1) === month);
+        return (!year || d.getFullYear() === year) &&
+               (!month || (d.getMonth() + 1) === month) &&
+               (!storeId || e.storeId === storeId);
       });
 
-      return { filteredBills, filteredExpenses };
+      const filteredReturns = returns.filter(r => {
+        const d = new Date(r.date);
+        return (!year || d.getFullYear() === year) &&
+               (!month || (d.getMonth() + 1) === month) &&
+               (!storeId || r.storeId === storeId);
+      });
+
+      return { filteredBills, filteredExpenses, filteredReturns };
     }
 
-    // Update report UI & charts
     function updateReport() {
-      const { filteredBills, filteredExpenses } = filterData();
+      const { filteredBills, filteredExpenses, filteredReturns } = filterData();
 
-      // Calculate totals
       const totalProfitFromBills = filteredBills.reduce((sum, b) => sum + (b.profit || 0), 0);
       const totalSales = filteredBills.reduce((sum, b) => sum + (b.netAmount || 0), 0);
       const totalExpenses = filteredExpenses.reduce((sum, e) => sum + (parseFloat(e.cost) || 0), 0);
 
-      // Net profit
-      const netProfit = totalProfitFromBills - totalExpenses;
+      let totalReturns = 0;
+      const returnItemsMap = {};
+      filteredReturns.forEach(r => {
+        (r.items || []).forEach(item => {
+          totalReturns += (item.returnPrice || 0);
+          if (returnItemsMap[item.name]) {
+            returnItemsMap[item.name] += 1;
+          } else {
+            returnItemsMap[item.name] = 1;
+          }
+        });
+      });
 
-      // Update UI
+      const netProfit = totalProfitFromBills - totalExpenses - totalReturns;
+
       netProfitEl.textContent = formatCurrency(netProfit);
       totalSalesEl.textContent = formatCurrency(totalSales);
       totalExpensesEl.textContent = formatCurrency(totalExpenses);
+      totalReturnsEl.textContent = formatCurrency(totalReturns);
 
-      // Top items sold quantities
       const itemMap = {};
       filteredBills.forEach(b => {
         (b.items || []).forEach(i => {
@@ -256,7 +326,6 @@
       const itemNames = Object.keys(itemMap);
       const itemQtys = Object.values(itemMap);
 
-      // Destroy previous charts to avoid overlap
       if (topItemsChart) topItemsChart.destroy();
       topItemsChart = new Chart(topItemsCtx, {
         type: 'bar',
@@ -281,14 +350,12 @@
         }
       });
 
-      // Daily sales for sales chart
       const dailySales = {};
       filteredBills.forEach(b => {
         const day = new Date(b.date).getDate();
         dailySales[day] = (dailySales[day] || 0) + (b.netAmount || 0);
       });
 
-      // Sort days ascending
       const days = Object.keys(dailySales).sort((a,b) => a - b);
       const values = days.map(d => dailySales[d]);
 
@@ -324,21 +391,49 @@
           }
         }
       });
+
+      const returnItemNames = Object.keys(returnItemsMap);
+      const returnItemCounts = Object.values(returnItemsMap);
+
+      if (returnItemsChart) returnItemsChart.destroy();
+      returnItemsChart = new Chart(returnItemsCtx, {
+        type: 'bar',
+        data: {
+          labels: returnItemNames,
+          datasets: [{
+            label: 'ආපසු ලැබුණු ප්‍රමාණය',
+            data: returnItemCounts,
+            backgroundColor: '#ef4444'
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+            title: { display: true, text: 'ආපසු ලැබුණු අයිතම' }
+          },
+          animation: {
+            duration: 1000,
+            easing: 'easeOutQuart'
+          }
+        }
+      });
     }
 
-    // Clear filters button
     clearFiltersBtn.addEventListener('click', () => {
       yearSelect.value = '';
       monthSelect.value = '';
+      storeSelect.value = '';
       updateReport();
     });
 
     yearSelect.addEventListener('change', updateReport);
     monthSelect.addEventListener('change', updateReport);
+    storeSelect.addEventListener('change', updateReport);
 
-    // Initialize selects and report
     populateYears();
     populateMonths();
+    populateStores();
 
     updateReport();
   </script>
