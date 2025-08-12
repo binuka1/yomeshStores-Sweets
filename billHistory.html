@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>බිල්පත් ඉතිහාසය</title>
   <style>
+    /* (ඔයා දීපු CSS එක ඉතිරි එකම) */
     * {
       box-sizing: border-box;
     }
@@ -264,6 +265,7 @@
 
       let billsLS = safeParse('bills', []);
       let products = safeParse('products', []);
+      let outOfStock = safeParse('outOfStockProducts', []);
       let monthlyProfit = safeParse('monthlyProfit', {});
       let monthlySales = safeParse('monthlySales', {});
 
@@ -279,9 +281,26 @@
           const pid = item.productId || item.id || item.productID || item.product;
           if (!pid) return;
           const qty = parseFloat(item.quantity || item.qty || 0) || 0;
-          const pIndex = products.findIndex(p => p.id === pid);
+
+          let pIndex = products.findIndex(p => p.id === pid);
           if (pIndex !== -1) {
             products[pIndex].quantity = (parseFloat(products[pIndex].quantity || 0) || 0) + qty;
+          } else {
+            const outIndex = outOfStock.findIndex(p => p.id === pid);
+            if (outIndex !== -1) {
+              const productFromOut = outOfStock[outIndex];
+              productFromOut.quantity = (parseFloat(productFromOut.quantity || 0) || 0) + qty;
+              products.push(productFromOut);
+              outOfStock.splice(outIndex, 1);
+            } else {
+              products.push({
+                id: pid,
+                productName: item.productName || item.name || '',
+                quantity: qty,
+                costPrice: item.costPrice || 0,
+                // අවශ්‍ය වෙනත් field මෙහි එක් කරන්න
+              });
+            }
           }
         });
       }
@@ -294,13 +313,14 @@
       billsLS.splice(index, 1);
 
       localStorage.setItem('products', JSON.stringify(products));
+      localStorage.setItem('outOfStockProducts', JSON.stringify(outOfStock));
       localStorage.setItem('bills', JSON.stringify(billsLS));
       localStorage.setItem('monthlyProfit', JSON.stringify(monthlyProfit));
       localStorage.setItem('monthlySales', JSON.stringify(monthlySales));
 
       alert('බිල reverse කරයි. Stock, මාසික වාර්තා (Sales & Profit) යාවත්කාලීන කරන ලදි.');
 
-      render(filteredBills);
+      render(billsLS);
     }
 
     function render(data) {

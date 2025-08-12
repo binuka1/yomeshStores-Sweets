@@ -111,78 +111,117 @@
       background-color: #1565c0;
       transform: translateY(-3px);
     }
-     .action-btn1:hover {
+    .action-btn1 {
+      background-color: #1976d2;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 1.1rem;
+      box-shadow: 0 5px 15px rgb(25 118 210 / 0.5);
+      transition: background-color 0.3s ease, transform 0.25s ease;
+      user-select: none;
+      margin-top: 15px;
+      width: 220px;
+    }
+    .action-btn1:hover {
       background-color: #1565c0;
       transform: translateY(-3px);
     }
-    /* Product List Table */
+
+    /* ======= Updated product list style ======= */
     .product-list-section {
-      overflow-x: auto;
+      margin-top: 30px;
     }
-    table {
+    #searchInput {
+      margin-bottom: 15px;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1.5px solid #ccc;
       width: 100%;
-      border-collapse: collapse;
-      background: white;
-      box-shadow: 0 6px 15px rgb(0 0 0 / 0.1);
-      border-radius: 14px;
-      overflow: hidden;
-    }
-    thead {
-      background-color: #1976d2;
-      color: white;
-      font-weight: 700;
-      user-select: none;
-    }
-    th, td {
-      padding: 14px 18px;
-      text-align: left;
-      border-bottom: 1px solid #ddd;
-      vertical-align: middle;
       font-size: 1rem;
     }
-    tbody tr:hover {
-      background-color: #e3f2fd;
+    .product-item {
+      background: white;
+      border-radius: 14px;
+      box-shadow: 0 6px 15px rgb(0 0 0 / 0.1);
+      margin-bottom: 18px;
+      padding: 16px 20px;
+      user-select: none;
+      display: flex;
+      flex-direction: column;
     }
-    /* Responsive Table */
-    @media(max-width: 600px) {
-      table, thead, tbody, th, td, tr {
-        display: block;
+    /* row-top with label + value vertical stack for each column */
+    .product-item .row-top {
+      display: flex;
+      gap: 30px;
+      flex-wrap: wrap;
+    }
+    .product-item .row-top > div {
+      flex: 1;
+      min-width: 120px;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+    }
+    .product-item .row-top > div.cost {
+      flex: 0.7;
+    }
+    .product-item .row-top > div .label {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: #555;
+      margin-bottom: 6px;
+      user-select: none;
+    }
+    .product-item .row-top > div .value {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #222;
+      user-select: text;
+    }
+
+    .product-item .row-bottom {
+      margin-top: 12px;
+      text-align: right;
+    }
+    .product-item .row-bottom button {
+      background-color: #1976d2;
+      color: white;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-left: 12px;
+      transition: background-color 0.3s ease;
+      user-select: none;
+    }
+    .product-item .row-bottom button.delete {
+      background-color: #d32f2f;
+    }
+    .product-item .row-bottom button:hover {
+      filter: brightness(0.85);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+      .product-item .row-top {
+        flex-direction: column;
+        gap: 8px;
       }
-      thead tr {
-        position: absolute;
-        top: -9999px;
-        left: -9999px;
+      .product-item .row-top > div {
+        min-width: 100%;
       }
-      tr {
-        margin-bottom: 1.5rem;
-        border-radius: 14px;
-        box-shadow: 0 5px 15px rgb(25 118 210 / 0.15);
-        background: white;
-        padding: 10px 14px;
-      }
-      td {
-        border: none;
-        position: relative;
-        padding-left: 50%;
-        font-size: 0.95rem;
-      }
-      td::before {
-        position: absolute;
-        left: 18px;
-        top: 14px;
-        white-space: nowrap;
-        font-weight: 700;
-        color: #1976d2;
-      }
-      td[data-label="නිෂ්පාදන නම"]::before { content: "නිෂ්පාදන නම"; }
-      td[data-label="ප්‍රමාණය"]::before { content: "ප්‍රමාණය"; }
-      td[data-label="මිල (පිරිවැය)"]::before { content: "මිල (පිරිවැය)"; }
-      td[data-label="කල් ඉකුත්වීම"]::before { content: "කල් ඉකුත්වීම"; }
-      td[data-label="ක්‍රියා"]::before { content: "ක්‍රියා"; }
-      td button {
-        margin: 5px 5px 0 0;
+      .product-item .row-bottom button {
+        padding: 10px 16px;
+        font-size: 1rem;
+        margin-left: 8px;
       }
     }
+
     /* Modal styles */
     .modal {
       display: none;
@@ -218,32 +257,6 @@
     }
     .close-btn:hover {
       color: #d32f2f;
-    }
-
-    .action-btn1 {
-      background-color: #1976d2;
-      color: white;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 10px;
-      font-weight: 700;
-      cursor: pointer;
-      font-size: 1.1rem;
-      box-shadow: 0 5px 15px rgb(25 118 210 / 0.5);
-      transition: background-color 0.3s ease, transform 0.25s ease;
-      user-select: none;
-      margin-top: 15px;
-      width: 220px;
-    }
-
-    /* Search input styling */
-    #searchInput {
-      margin-bottom: 15px;
-      padding: 10px;
-      border-radius: 8px;
-      border: 1.5px solid #ccc;
-      width: 100%;
-      font-size: 1rem;
     }
   </style>
 </head>
@@ -287,27 +300,14 @@
       </form>
     </section>
 
-    <!-- Product List Table -->
+    <!-- Product List -->
     <section class="product-list-section">
       <h2>නිෂ්පාදන ලැයිස්තුව</h2>
-
-      <!-- Search bar added here -->
       <input type="text" id="searchInput" placeholder="නිෂ්පාදන නම අනුව සෙවීම..." />
 
-      <table class="responsive-table" id="productTable">
-        <thead>
-          <tr>
-            <th>නිෂ්පාදන නම</th>
-            <th>ප්‍රමාණය</th>
-            <th>මිල (පිරිවැය)</th>
-            <th>කල් ඉකුත්වීම</th>
-            <th>ක්‍රියා</th>
-          </tr>
-        </thead>
-        <tbody id="productTableBody">
-          <!-- Products added dynamically -->
-        </tbody>
-      </table>
+      <div id="productListContainer">
+        <!-- Products rendered here -->
+      </div>
     </section>
   </main>
 
@@ -342,114 +342,149 @@
     </div>
   </div>
 
-<script>
-  // Get references
-  const productForm = document.getElementById('addProductForm');
-  const productTableBody = document.getElementById('productTableBody');
-  const searchInput = document.getElementById('searchInput');
+  <!-- Add Quantity Modal -->
+  <div id="addQtyModal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="addQtyModalTitle" aria-modal="true">
+    <div class="modal-content">
+      <span class="close-btn" id="closeAddQtyModal" aria-label="Close modal">&times;</span>
+      <h2 id="addQtyModalTitle">ප්‍රමාණය එක් කරන්න</h2>
+      <form id="addQtyForm">
+        <div class="form-row">
+          <label for="addQuantityInput">එකතු කළ යුතු ප්‍රමාණය</label>
+          <input type="number" id="addQuantityInput" name="addQuantityInput" min="1" required />
+        </div>
+        <button type="submit" class="action-btn">එකතු කරන්න</button>
+      </form>
+    </div>
+  </div>
 
+<script>
+  const productForm = document.getElementById('addProductForm');
+  const productListContainer = document.getElementById('productListContainer');
+  const searchInput = document.getElementById('searchInput');
   const editModal = document.getElementById('editModal');
   const closeEditModalBtn = document.getElementById('closeEditModal');
   const editProductForm = document.getElementById('editProductForm');
-
   const logoutBtn = document.getElementById('logoutBtn');
 
   let products = [];
   let editIndex = null;
+  let addQtyIndex = null; // New for add quantity modal
 
-  // Load products from localStorage on page load
   function loadProducts() {
-    const storedProducts = localStorage.getItem('products');
-    products = storedProducts ? JSON.parse(storedProducts) : [];
-    renderProductTable();
+    const stored = localStorage.getItem('products');
+    if (stored) {
+      products = JSON.parse(stored);
+    } else {
+      products = [
+        {
+          id: '1',
+          productName: 'දෙමළ ගහ',
+          quantity: 20,
+          costPrice: 150.5,
+          expiryDate: '2025-12-31'
+        },
+        {
+          id: '2',
+          productName: 'කොළ පාන්',
+          quantity: 50,
+          costPrice: 85.0,
+          expiryDate: '2025-11-15'
+        }
+      ];
+      saveProducts();
+    }
+    renderProductList();
   }
 
-  // Save products to localStorage
   function saveProducts() {
     localStorage.setItem('products', JSON.stringify(products));
   }
 
-  // Render product list table with search filter
-  function renderProductTable() {
+  function renderProductList() {
     const filterText = searchInput.value.trim().toLowerCase();
+    productListContainer.innerHTML = '';
 
-    productTableBody.innerHTML = '';
-
-    let filteredProducts = products;
+    let filtered = products;
     if (filterText !== '') {
-      filteredProducts = products.filter(product =>
-        product.productName.toLowerCase().includes(filterText)
-      );
+      filtered = products.filter(p => p.productName.toLowerCase().includes(filterText));
     }
 
-    if (filteredProducts.length === 0) {
-      productTableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 20px;">කිසිඳු නිෂ්පාදන නොමැත</td></tr>`;
+    if (filtered.length === 0) {
+      productListContainer.innerHTML = `<p style="text-align:center; padding:20px;">කිසිඳු නිෂ්පාදන නොමැත</p>`;
       return;
     }
 
-    filteredProducts.forEach((product, index) => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td data-label="නිෂ්පාදන නම">${product.productName}</td>
-        <td data-label="ප්‍රමාණය">${product.quantity}</td>
-        <td data-label="මිල (පිරිවැය)">${product.costPrice.toFixed(2)}</td>
-        <td data-label="කල් ඉකුත්වීම">${product.expiryDate}</td>
-        <td data-label="ක්‍රියා">
-          <button class="action-btn" onclick="openEditModal(${index})" style="background-color:#388e3c; margin-right: 8px;">සකසන්න</button>
-          <button class="action-btn" onclick="deleteProduct(${index})" style="background-color:#d32f2f;">මකන්න</button>
-        </td>
+    filtered.forEach((p, i) => {
+      const realIndex = products.findIndex(prod => prod.id === p.id);
+
+      const productDiv = document.createElement('div');
+      productDiv.className = 'product-item';
+
+      productDiv.innerHTML = `
+        <div class="row-top">
+          <div>
+            <div class="label">නිෂ්පාදන නම</div>
+            <div class="value">${p.productName}</div>
+          </div>
+          <div>
+            <div class="label">ප්‍රමාණය</div>
+            <div class="value">${p.quantity}</div>
+          </div>
+          <div class="cost">
+            <div class="label">මිල (පිරිවැය)</div>
+            <div class="value">රු.${p.costPrice.toFixed(2)}</div>
+          </div>
+        </div>
+        <div class="row-bottom">
+          <button onclick="openEditModal(${realIndex})">සකසන්න</button>
+          <button onclick="openAddQtyModal(${realIndex})">quantity</button>
+          <button class="delete" onclick="deleteProduct(${realIndex})">මකන්න</button>
+        </div>
       `;
-      productTableBody.appendChild(tr);
+
+      productListContainer.appendChild(productDiv);
     });
   }
 
-  // Delete product by index
-  function deleteProduct(index) {
+  function deleteProduct(i) {
     if (confirm('මෙම නිෂ්පාදනය මකන්නද?')) {
-      products.splice(index, 1);
+      products.splice(i, 1);
       saveProducts();
-      renderProductTable();
+      renderProductList();
     }
   }
 
-  // Open modal and prefill form with selected product data
-  function openEditModal(index) {
-    editIndex = index;
-    const product = products[index];
-
-    editProductForm.editProductName.value = product.productName;
-    editProductForm.editQuantity.value = product.quantity;
-    editProductForm.editCostPrice.value = product.costPrice;
-    editProductForm.editExpiryDate.value = product.expiryDate;
+  function openEditModal(i) {
+    editIndex = i;
+    const p = products[i];
+    editProductForm.editProductName.value = p.productName;
+    editProductForm.editQuantity.value = p.quantity;
+    editProductForm.editCostPrice.value = p.costPrice;
+    editProductForm.editExpiryDate.value = p.expiryDate;
 
     editModal.style.display = 'block';
     editModal.setAttribute('aria-hidden', 'false');
     editProductForm.editProductName.focus();
   }
 
-  // Close modal
   function closeEditModal() {
     editModal.style.display = 'none';
     editModal.setAttribute('aria-hidden', 'true');
     editIndex = null;
   }
 
-  // Close modal handlers
   closeEditModalBtn.addEventListener('click', closeEditModal);
   window.addEventListener('click', e => {
     if (e.target === editModal) closeEditModal();
   });
 
-  // Handle edit form submission
   editProductForm.addEventListener('submit', e => {
     e.preventDefault();
-
     const expiryDate = editProductForm.editExpiryDate.value;
     if (new Date(expiryDate) < new Date(new Date().toISOString().split('T')[0])) {
       alert('කල් ඉකුත්වීමේ දිනය අද දිනයට හෝ පසුව යුතුය.');
       return;
     }
-
     products[editIndex] = {
       id: products[editIndex].id || Date.now().toString(),
       productName: editProductForm.editProductName.value.trim(),
@@ -457,26 +492,26 @@
       costPrice: parseFloat(editProductForm.editCostPrice.value),
       expiryDate: expiryDate
     };
-
     saveProducts();
-    renderProductTable();
+    renderProductList();
     closeEditModal();
   });
 
-  // Handle add product form submit
   productForm.addEventListener('submit', e => {
     e.preventDefault();
-
     const productName = productForm.productName.value.trim();
     const quantity = parseInt(productForm.quantity.value);
     const costPrice = parseFloat(productForm.costPrice.value);
     const expiryDate = productForm.expiryDate.value;
 
+    if (!productName || quantity < 1 || isNaN(costPrice) || !expiryDate) {
+      alert('කරුණාකර සියලු ක්ෂේත්‍ර වල නිවැරදි තොරතුරු ඇතුළත් කරන්න.');
+      return;
+    }
     if (new Date(expiryDate) < new Date(new Date().toISOString().split('T')[0])) {
       alert('කල් ඉකුත්වීමේ දිනය අද දිනයට හෝ පසුව යුතුය.');
       return;
     }
-
     const newProduct = {
       id: Date.now().toString(),
       productName,
@@ -484,24 +519,65 @@
       costPrice,
       expiryDate
     };
-
     products.push(newProduct);
     saveProducts();
-    renderProductTable();
+    renderProductList();
     productForm.reset();
   });
 
-  // Logout button
+  // Logout button handler
   logoutBtn.addEventListener('click', () => {
-    localStorage.removeItem('loggedInUser');
-    window.location.href = 'index.html';
+    if (confirm('Logout වෙන්න අවශ්‍යද?')) {
+      localStorage.clear();
+      location.href = 'index.html'; // Change as per login page
+    }
   });
 
-  // Initialize
-  window.onload = loadProducts;
+  // ====== Add Quantity Modal related ======
+  const addQtyModal = document.getElementById('addQtyModal');
+  const closeAddQtyModalBtn = document.getElementById('closeAddQtyModal');
+  const addQtyForm = document.getElementById('addQtyForm');
+  const addQuantityInput = document.getElementById('addQuantityInput');
 
-  // Search input event listener
-  searchInput.addEventListener('input', renderProductTable);
+  function openAddQtyModal(i) {
+    addQtyIndex = i;
+    addQuantityInput.value = '';
+    addQtyModal.style.display = 'block';
+    addQtyModal.setAttribute('aria-hidden', 'false');
+    addQuantityInput.focus();
+  }
+
+  function closeAddQtyModal() {
+    addQtyModal.style.display = 'none';
+    addQtyModal.setAttribute('aria-hidden', 'true');
+    addQtyIndex = null;
+  }
+
+  closeAddQtyModalBtn.addEventListener('click', closeAddQtyModal);
+  window.addEventListener('click', e => {
+    if (e.target === addQtyModal) closeAddQtyModal();
+  });
+
+  addQtyForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const val = parseInt(addQuantityInput.value);
+    if (isNaN(val) || val <= 0) {
+      alert('කරුණාකර වලංගු ප්‍රමාණයක් ඇතුළත් කරන්න.');
+      return;
+    }
+    if (addQtyIndex !== null && products[addQtyIndex]) {
+      products[addQtyIndex].quantity = (parseInt(products[addQtyIndex].quantity) || 0) + val;
+      saveProducts();
+      renderProductList();
+      closeAddQtyModal();
+    }
+  });
+
+  // Search input filter live update
+  searchInput.addEventListener('input', renderProductList);
+
+  // Initialize on page load
+  loadProducts();
 </script>
 </body>
 </html>
