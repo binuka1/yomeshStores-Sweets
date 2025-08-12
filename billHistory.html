@@ -3,177 +3,360 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>බිල් ඉතිහාසය</title>
+  <title>බිල්පත් ඉතිහාසය</title>
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f1f7ff;
-      padding: 10px 8px;
-      margin: 0;
-    }
-
-    .container {
-      max-width: 720px;
-      width: 95vw;
-      margin: 20px auto;
-      background: #fff;
-      border-radius: 16px;
-      padding: 20px;
-      box-shadow: 0 10px 40px rgba(0, 105, 192, 0.2);
-      overflow-x: auto;
+    * {
       box-sizing: border-box;
     }
-
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #e6f0ff;
+      margin: 0;
+      padding: 14px 12px;
+      color: #0d47a1;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      user-select: none;
+    }
+    .container {
+      max-width: 900px;
+      width: 95vw;
+      margin: 22px auto 40px;
+      background: white;
+      padding: 22px 28px;
+      border-radius: 16px;
+      box-shadow: 0 14px 36px rgba(25, 118, 210, 0.18);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
     h1 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 28px;
       color: #1565c0;
-      margin-bottom: 15px;
-      text-align: center;
-      font-size: 1.8rem;
+      font-weight: 700;
+      user-select: text;
     }
-
-    table {
+    #searchInput {
       width: 100%;
+      padding: 14px 16px;
+      margin-bottom: 22px;
+      font-size: 1rem;
+      border-radius: 12px;
+      border: 2px solid #1976d2;
+      outline-offset: 3px;
+      transition: border-color 0.25s ease, box-shadow 0.3s ease;
+      box-shadow: inset 0 1px 5px rgba(0,0,0,0.1);
+    }
+    #searchInput:focus {
+      border-color: #0288d1;
+      box-shadow: 0 0 10px rgba(2,136,209,0.7);
+    }
+    .table-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border-radius: 16px;
+      box-shadow: inset 0 -1px 6px rgba(0,0,0,0.06);
+    }
+    table {
       border-collapse: collapse;
-      font-size: 0.9rem;
-      border-radius: 10px;
-      overflow: hidden;
-      min-width: 400px;
+      width: 100%;
+      min-width: 640px;
+      font-size: 0.95rem;
+      color: #222;
+      user-select: text;
     }
-
-    th, td {
-      border: 1px solid #e0e0e0;
-      padding: 10px 8px;
-      text-align: center;
-      white-space: nowrap;
-    }
-
-    th {
-      background-color: #1976d2;
-      color: #fff;
-    }
-
-    td.store-name {
-      max-width: 140px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    td.store-name:hover {
-      white-space: normal;
-      overflow: visible;
-      background-color: #e3f2fd;
-      cursor: default;
-    }
-
-    tr:nth-child(even) td {
-      background-color: #f9f9f9;
-    }
-
-    .view-btn {
-      background-color: #0288d1;
+    thead th {
+      position: sticky;
+      top: 0;
+      background: linear-gradient(90deg, #1976d2, #0288d1);
       color: white;
-      padding: 6px 14px;
-      border: none;
-      border-radius: 8px;
+      font-weight: 700;
+      padding: 14px 18px;
+      text-align: left;
+      white-space: nowrap;
+      z-index: 15;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+      letter-spacing: 0.04em;
+    }
+    tbody tr:hover {
+      background-color: #d3e3fc;
+      transition: background-color 0.3s ease;
       cursor: pointer;
-      transition: background 0.3s;
-      font-size: 0.85rem;
+    }
+    tbody td {
+      padding: 12px 16px;
+      border-bottom: 1.5px solid #e2eaf8;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      vertical-align: middle;
+    }
+    td.store-name, th.store-name {
+      width: 30%;
+      max-width: 30%;
+      font-weight: 600;
+      color: #0d3a75;
+    }
+    td.date-col, th.date-col {
+      width: 25%;
+      max-width: 25%;
+      text-align: center;
+      color: #1565c0;
+      font-weight: 600;
+    }
+    td.amount-col, th.amount-col {
+      width: 20%;
+      max-width: 20%;
+      text-align: center;
+      font-weight: 700;
+      color: #0d47a1;
+    }
+    td.actions-col, th.actions-col {
+      width: 25%;
+      max-width: 25%;
+      text-align: center;
+    }
+    .btn-group {
+      display: inline-flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: nowrap;
+    }
+    button.btn {
+      background-color: #1976d2;
+      border: none;
+      color: white;
+      padding: 8px 18px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 700;
+      transition: background-color 0.25s ease, box-shadow 0.3s ease;
+      user-select: none;
+      box-shadow: 0 4px 10px rgba(25, 118, 210, 0.5);
+      min-width: 90px;
       white-space: nowrap;
     }
-
-    .view-btn:hover {
-      background-color: #01579b;
+    button.btn.reverse-btn {
+      background-color: #d32f2f;
+      box-shadow: 0 4px 12px rgba(211, 47, 47, 0.6);
     }
-
-    /* Responsive Styles */
-    @media (max-width: 600px) {
-      body {
-        padding: 8px 6px;
+    button.btn:hover {
+      background-color: #0d47a1;
+      box-shadow: 0 6px 14px rgba(13, 71, 161, 0.7);
+    }
+    button.btn.reverse-btn:hover {
+      background-color: #9b1c1c;
+      box-shadow: 0 6px 16px rgba(155, 28, 28, 0.85);
+    }
+    td.store-name[title]:hover::after {
+      content: attr(title);
+      position: absolute;
+      background: #1976d2;
+      color: white;
+      padding: 6px 10px;
+      border-radius: 8px;
+      top: 36px;
+      white-space: normal;
+      max-width: 280px;
+      z-index: 20;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      user-select: none;
+    }
+    .no-bills {
+      padding: 26px;
+      text-align: center;
+      color: #555;
+      font-size: 1.1rem;
+      font-style: italic;
+      user-select: none;
+    }
+    /* Responsive */
+    @media (max-width: 720px) {
+      td.amount-col, th.amount-col,
+      td.date-col, th.date-col {
+        display: none;
       }
-
-      .container {
-        max-width: 100%;
-        width: 98vw;
-        margin: 10px auto;
-        padding: 15px 12px;
+      td.store-name, th.store-name {
+        width: 60%;
+        max-width: 60%;
       }
-
-      h1 {
-        font-size: 1.5rem;
+      td.actions-col, th.actions-col {
+        width: 40%;
+        max-width: 40%;
       }
-
       table {
-        font-size: 0.8rem;
-        min-width: 320px;
+        min-width: 100%;
       }
-
-      th, td {
-        padding: 8px 6px;
-      }
-
-      td.store-name {
-        max-width: 100px;
-      }
-
-      .view-btn {
-        padding: 5px 10px;
-        font-size: 0.75rem;
+      button.btn {
+        min-width: 75px;
+        padding: 7px 14px;
+        font-size: 0.9rem;
       }
     }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <h1>📋 බිල්පත් ඉතිහාසය</h1>
+  <div class="container">
+    <h1>📋 බිල්පත් ඉතිහාසය</h1>
+    <input
+      type="text"
+      id="searchInput"
+      placeholder="🔍 කඩ නම හෝ දිනයෙන් සෙවීම..."
+      aria-label="සෙවීම"
+      autocomplete="off"
+    />
+    <div class="table-wrap">
+      <table aria-label="බිල්පත් ඉතිහාසය" id="historyTable" role="grid" aria-live="polite">
+        <thead>
+          <tr role="row">
+            <th scope="col" class="store-name">කඩය</th>
+            <th scope="col" class="date-col">දිනය</th>
+            <th scope="col" class="amount-col">මුළු මුදල</th>
+            <th scope="col" class="actions-col">ක්‍රියාකාරකම්</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div id="noBillsMsg" class="no-bills" style="display:none;">ඇත්තටම කිසිඳු බිල්පත් නොමැත.</div>
+  </div>
 
-  <table id="historyTable" aria-label="බිල්පත් ඉතිහාසය">
-    <thead>
-      <tr>
-        <th>කඩය</th>
-        <th>දිනය</th>
-        <th>මුළු මුදල</th>
-        <th>බිල</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-</div>
+  <script>
+    function safeParse(key, fallback) {
+      try {
+        return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback));
+      } catch(e) {
+        return fallback;
+      }
+    }
 
-<script>
-  const bills = JSON.parse(localStorage.getItem('bills') || '[]');
-  const stores = JSON.parse(localStorage.getItem('stores') || '[]');
-  const tbody = document.querySelector('#historyTable tbody');
+    let bills = safeParse('bills', []);
+    let stores = safeParse('stores', []);
+    const tbody = document.querySelector('#historyTable tbody');
+    const noBillsMsg = document.getElementById('noBillsMsg');
+    const searchInput = document.getElementById('searchInput');
 
-  function formatDate(iso) {
-    const d = new Date(iso);
-    return d.toLocaleDateString('si-LK', {
-      year: 'numeric', month: 'short', day: 'numeric',
-      hour: '2-digit', minute: '2-digit'
+    function escapeHtml(str) {
+      return String(str || '').replace(/[&<>"']/g, function(m) {
+        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];
+      });
+    }
+
+    function formatDate(iso) {
+      if (!iso) return '';
+      const d = new Date(iso);
+      return d.toLocaleString('si-LK', {
+        year: 'numeric', month: 'short', day: 'numeric',
+        hour: '2-digit', minute: '2-digit'
+      });
+    }
+
+    function viewBill(id) {
+      localStorage.setItem('selectedBillId', id);
+      window.location.href = 'bill1.html';
+    }
+
+    function reverseBill(id) {
+      if (!confirm('මෙම බිල reverse කිරීමට අවශ්‍යද? (මෙය මුළුමනින්ම හරන් දත් ඔබට හැක)')) return;
+
+      let billsLS = safeParse('bills', []);
+      let products = safeParse('products', []);
+      let monthlyProfit = safeParse('monthlyProfit', {});
+      let monthlySales = safeParse('monthlySales', {});
+
+      const index = billsLS.findIndex(b => b.id === id);
+      if (index === -1) {
+        alert('Bill හමු නොවීය.');
+        return;
+      }
+
+      const bill = billsLS[index];
+      if (Array.isArray(bill.items)) {
+        bill.items.forEach(item => {
+          const pid = item.productId || item.id || item.productID || item.product;
+          if (!pid) return;
+          const qty = parseFloat(item.quantity || item.qty || 0) || 0;
+          const pIndex = products.findIndex(p => p.id === pid);
+          if (pIndex !== -1) {
+            products[pIndex].quantity = (parseFloat(products[pIndex].quantity || 0) || 0) + qty;
+          }
+        });
+      }
+
+      const monthKey = new Date(bill.date || Date.now()).toISOString().slice(0,7);
+
+      monthlyProfit[monthKey] = Math.max(0, (monthlyProfit[monthKey] || 0) - (parseFloat(bill.profit) || 0));
+      monthlySales[monthKey] = Math.max(0, (monthlySales[monthKey] || 0) - (parseFloat(bill.grossAmount || bill.total) || 0));
+
+      billsLS.splice(index, 1);
+
+      localStorage.setItem('products', JSON.stringify(products));
+      localStorage.setItem('bills', JSON.stringify(billsLS));
+      localStorage.setItem('monthlyProfit', JSON.stringify(monthlyProfit));
+      localStorage.setItem('monthlySales', JSON.stringify(monthlySales));
+
+      alert('බිල reverse කරයි. Stock, මාසික වාර්තා (Sales & Profit) යාවත්කාලීන කරන ලදි.');
+
+      render(filteredBills);
+    }
+
+    function render(data) {
+      tbody.innerHTML = '';
+      if (!data || data.length === 0) {
+        noBillsMsg.style.display = 'block';
+        return;
+      } else {
+        noBillsMsg.style.display = 'none';
+      }
+
+      data.slice().reverse().forEach(b => {
+        const store = stores.find(s => s.id === b.storeId);
+        const storeName = store ? (store.storeName || store.name || 'නොදන්නා') : 'නොදන්නා';
+        const fullAmount = parseFloat(b.grossAmount || b.total || 0).toFixed(2);
+
+        const tr = document.createElement('tr');
+
+        tr.innerHTML = `
+          <td class="store-name" title="${escapeHtml(storeName)}">${escapeHtml(storeName)}</td>
+          <td class="date-col">${formatDate(b.date)}</td>
+          <td class="amount-col">Rs. ${fullAmount}</td>
+          <td class="actions-col">
+            <div class="btn-group">
+              <button class="btn view-btn" onclick="viewBill('${b.id}')">බිල දැක්ම</button>
+              <button class="btn reverse-btn" onclick="reverseBill('${b.id}')">Reverse</button>
+            </div>
+          </td>
+        `;
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Initial render with all bills
+    render(bills);
+
+    // Search filter logic
+    searchInput.addEventListener('input', function() {
+      const val = this.value.trim().toLowerCase();
+
+      if (!val) {
+        render(bills);
+        return;
+      }
+
+      const filteredBills = bills.filter(b => {
+        const store = stores.find(s => s.id === b.storeId);
+        const storeName = store ? (store.storeName || store.name || '') : '';
+        const dateStr = formatDate(b.date).toLowerCase();
+        return storeName.toLowerCase().includes(val) || dateStr.includes(val);
+      });
+
+      render(filteredBills);
     });
-  }
-
-  bills.slice().reverse().forEach(b => {
-    const store = stores.find(s => s.id === b.storeId);
-    const storeName = store ? (store.storeName || store.name || 'නොදන්නා') : 'නොදන්නා';
-    const fullAmount = parseFloat(b.grossAmount || b.total || 0).toFixed(2);
-
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td class="store-name" title="${storeName}">${storeName}</td>
-      <td>${formatDate(b.date)}</td>
-      <td>Rs. ${fullAmount}</td>
-      <td><button class="view-btn" onclick="viewBill('${b.id}')">බිල දැක්ම</button></td>
-    `;
-    tbody.appendChild(tr);
-  });
-
-  function viewBill(billId) {
-    localStorage.setItem('selectedBillId', billId);
-    window.location.href = 'bill1.html';
-  }
-</script>
+  </script>
 
 </body>
 </html>

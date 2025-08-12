@@ -15,6 +15,9 @@
       --success: #388e3c;
       --card: #fff;
       --muted: #f1f8ff;
+      --shadow: rgba(25, 118, 210, 0.2);
+      --btn-gradient-start: #42a5f5;
+      --btn-gradient-end: #1976d2;
     }
 
     [data-theme='dark'] {
@@ -23,6 +26,9 @@
       --header: #0d47a1;
       --card: #1e1e1e;
       --muted: #263238;
+      --shadow: rgba(13, 71, 161, 0.5);
+      --btn-gradient-start: #1565c0;
+      --btn-gradient-end: #0d47a1;
     }
 
     * {
@@ -40,18 +46,21 @@
       flex-direction: column;
       line-height: 1.5;
       transition: background 0.3s, color 0.3s;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
     .main-header {
       background-color: var(--header);
       color: #fff;
-      padding: 15px 25px;
+      padding: 16px 28px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       position: sticky;
       top: 0;
       z-index: 1000;
+      box-shadow: 0 3px 12px var(--shadow);
     }
 
     .header-left {
@@ -61,233 +70,287 @@
     }
 
     .main-header h1 {
-      font-size: 1.7rem;
+      font-size: 1.8rem;
       font-weight: 700;
+      letter-spacing: 0.04em;
     }
 
-    .toggle-theme {
-      background: none;
-      border: 2px solid #fff;
-      color: #fff;
-      padding: 6px 12px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 700;
-      transition: background-color 0.3s ease;
-    }
-
-    .toggle-theme:hover {
-      background-color: rgba(255, 255, 255, 0.15);
-    }
-
+    .toggle-theme,
     .refresh-btn {
       background: none;
       border: 2px solid #fff;
       color: #fff;
-      padding: 6px 12px;
-      border-radius: 8px;
+      padding: 8px 16px;
+      border-radius: 10px;
       cursor: pointer;
       font-weight: 700;
+      font-size: 0.9rem;
       transition: background-color 0.3s ease;
+      user-select: none;
+      box-shadow: 0 3px 8px rgba(255 255 255 / 0.3);
     }
 
+    .toggle-theme:hover,
     .refresh-btn:hover {
-      background-color: rgba(255, 255, 255, 0.15);
+      background-color: rgba(255 255 255 / 0.15);
+      box-shadow: 0 5px 14px rgba(255 255 255 / 0.45);
     }
 
     .container {
       max-width: 1100px;
-      margin: 25px auto;
-      padding: 0 15px;
+      margin: 30px auto;
+      padding: 0 18px 60px;
+      width: 95vw;
+    }
+
+    #welcomeMsg {
+      font-size: 1.5rem;
+      margin-bottom: 24px;
+      font-weight: 600;
+      color: var(--header);
+      user-select: none;
+      text-align: center;
     }
 
     .quick-actions {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 12px;
-      margin-top: 20px;
+      gap: 14px;
+      margin-bottom: 36px;
     }
 
     .quick-actions button {
-      background: linear-gradient(135deg, #42a5f5, #1976d2);
+      background: linear-gradient(135deg, var(--btn-gradient-start), var(--btn-gradient-end));
       border: none;
       color: #fff;
       font-weight: 700;
-      padding: 12px 18px;
-      font-size: 1rem;
-      border-radius: 12px;
+      padding: 14px 22px;
+      font-size: 1.05rem;
+      border-radius: 16px;
       cursor: pointer;
       transition: background 0.3s, transform 0.25s;
+      box-shadow: 0 8px 20px var(--shadow);
+      flex: 1 1 150px;
+      max-width: 180px;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
 
     .quick-actions button:hover {
       background: linear-gradient(135deg, #1e88e5, #1565c0);
-      transform: translateY(-2px);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 26px var(--shadow);
     }
 
     .dashboard-cards {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 22px;
-      margin-top: 30px;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 28px;
+      margin-bottom: 48px;
+      user-select: none;
     }
 
     .card {
       background-color: var(--card);
-      padding: 24px 30px;
-      border-radius: 14px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.07);
-      transition: transform 0.3s ease;
+      padding: 28px 32px;
+      border-radius: 18px;
+      box-shadow: 0 12px 24px var(--shadow);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
     }
 
     .card:hover {
-      transform: translateY(-4px);
+      transform: translateY(-6px);
+      box-shadow: 0 22px 38px var(--shadow);
     }
 
     .card h3 {
-      font-size: 1.3rem;
+      font-size: 1.4rem;
       color: var(--header);
       font-weight: 700;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
+      letter-spacing: 0.02em;
     }
 
     .card p {
-      font-size: 2.4rem;
-      font-weight: 700;
+      font-size: 3rem;
+      font-weight: 900;
       color: var(--text);
+      letter-spacing: 0.04em;
+      margin-top: 6px;
     }
 
     .card ul {
       list-style: none;
-      margin-top: 12px;
+      margin-top: 18px;
       padding: 0;
+      width: 100%;
+      max-width: 320px;
     }
 
     .card ul li {
-      padding: 10px 14px;
+      padding: 12px 18px;
       background-color: var(--muted);
-      margin-bottom: 8px;
-      border-radius: 10px;
+      margin-bottom: 10px;
+      border-radius: 14px;
       font-weight: 600;
       display: flex;
       justify-content: space-between;
       color: var(--text);
-      font-size: 0.95rem;
+      font-size: 1.05rem;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.07);
+      user-select: text;
     }
 
     .chart-section {
-      margin-top: 40px;
-      padding: 0 15px;
+      margin-top: 30px;
+      padding: 0 10px;
+      user-select: none;
     }
 
     .chart-section h2 {
-      font-size: 1.6rem;
+      font-size: 1.8rem;
       text-align: center;
       color: var(--header);
-      margin-bottom: 20px;
+      margin-bottom: 28px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
     }
 
     #salesChart {
       width: 100% !important;
       max-width: 100%;
-      height: auto !important;
+      height: 320px !important;
+      border-radius: 18px;
+      box-shadow: 0 14px 38px var(--shadow);
+      background: var(--card);
+      padding: 12px;
     }
 
     .main-footer {
       background-color: var(--header);
       color: white;
       text-align: center;
-      padding: 15px;
-      margin-bottom: 10px;
+      padding: 16px 0;
       margin-top: auto;
+      user-select: none;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      box-shadow: 0 -4px 14px var(--shadow);
     }
 
     /* Fixed Floating Action Button */
     .fab {
       position: fixed;
-      bottom: 25px;
-      right: 25px;
+      bottom: 30px;
+      right: 30px;
       background-color: var(--header);
       color: white;
       border-radius: 50%;
-      width: 56px;
-      height: 56px;
-      margin-bottom: 40px;
+      width: 60px;
+      height: 60px;
+      margin-bottom: 50px;
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 32px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      font-size: 36px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.3);
       cursor: pointer;
       transition: background-color 0.3s ease;
       z-index: 1700;
+      user-select: none;
     }
 
     .fab:hover {
       background-color: #0d47a1; /* Darker shade on hover */
     }
 
+    /* Responsive */
     @media (max-width: 768px) {
       .dashboard-cards {
         grid-template-columns: 1fr;
-        gap: 18px;
+        gap: 22px;
+      }
+      .quick-actions button {
+        max-width: 100%;
+        flex-grow: 1;
+      }
+      #salesChart {
+        height: 240px !important;
+      }
+      #welcomeMsg {
+        font-size: 1.3rem;
+      }
+      .card p {
+        font-size: 2.6rem;
+      }
+      .main-header h1 {
+        font-size: 1.4rem;
       }
     }
   </style>
 </head>
 <body>
-  <header class="main-header">
+  <header class="main-header" role="banner">
     <div class="header-left">
       <h1>📊 Smart Billing Dashboard</h1>
-      <button class="refresh-btn" title="Refresh Page" onclick="location.reload()">⟳</button>
+      <button class="refresh-btn" title="Refresh Page" aria-label="Refresh" onclick="location.reload()">⟳</button>
     </div>
-    <button class="toggle-theme" onclick="toggleTheme()">🌙 Mode</button>
+    <button class="toggle-theme" title="Toggle light/dark mode" aria-pressed="false" onclick="toggleTheme()">🌙 Mode</button>
   </header>
 
-  <div class="container">
-    <h2 id="welcomeMsg">👋 ආයුබෝවන්!</h2>
+  <main class="container" role="main">
+    <h2 id="welcomeMsg" tabindex="0">👋 ආයුබෝවන්!</h2>
 
-    <div class="quick-actions">
-      <button onclick="location.href='billCreate.html'">🧾 බිල්පත්</button>
-      <button onclick="location.href='storeData.html'">🏪 වෙළඳසැල්</button>
-      <button onclick="location.href='stock.html'">🛒 නිෂ්පාදන</button>
-      <button onclick="location.href='expiredProducts.html'">❌ කල් ඉකුත්</button>
-      <button onclick="location.href='billHistory.html'">📜 ඉතිහාසය</button>
-      <button onclick="location.href='returns.html'">🔄 ආපසු</button>
-      <button onclick="location.href='expenses.html'">💸 වියදම්</button>
-      <button onclick="location.href='reports.html'">📊 වාර්තා</button>
-    </div>
+    <nav class="quick-actions" aria-label="Quick navigation buttons">
+      <button onclick="location.href='billCreate.html'" aria-label="බිල්පත්">🧾 බිල්පත්</button>
+      <button onclick="location.href='storeData.html'" aria-label="වෙළඳසැල්">🏪 වෙළඳසැල්</button>
+      <button onclick="location.href='stock.html'" aria-label="නිෂ්පාදන">🛒 නිෂ්පාදන</button>
+      <button onclick="location.href='expiredProducts.html'" aria-label="කල් ඉකුත් භාණ්ඩ">❌ කල් ඉකුත්</button>
+      <button onclick="location.href='billHistory.html'" aria-label="බිල්පත් ඉතිහාසය">📜 ඉතිහාසය</button>
+      <button onclick="location.href='returns.html'" aria-label="ආපසු">🔄 ආපසු</button>
+      <button onclick="location.href='expenses.html'" aria-label="වියදම්">💸 වියදම්</button>
+      <button onclick="location.href='reports.html'" aria-label="වාර්තා">📊 වාර්තා</button>
+    </nav>
 
-    <section class="dashboard-cards">
-      <div class="card">
+    <section class="dashboard-cards" aria-label="Dashboard summary cards">
+      <article class="card" tabindex="0" aria-describedby="monthlyProfitDesc">
         <h3>💹 මාසික ලාභය</h3>
-        <p id="monthlyProfit">රු. 0</p>
-      </div>
-      <div class="card">
+        <p id="monthlyProfit" aria-live="polite" aria-atomic="true">රු. 0</p>
+        <span id="monthlyProfitDesc" class="visually-hidden">Current month profit amount</span>
+      </article>
+      <article class="card" tabindex="0" aria-describedby="expiredCountDesc">
         <h3>❌ කල් ඉකුත් භාණ්ඩ</h3>
-        <p id="expiredCount">0</p>
-      </div>
-      <div class="card">
+        <p id="expiredCount" aria-live="polite" aria-atomic="true">0</p>
+        <span id="expiredCountDesc" class="visually-hidden">Number of expired products</span>
+      </article>
+      <article class="card" tabindex="0" aria-label="Top store rankings">
         <h3>🏆 Sillara Kada Rank</h3>
-        <ul id="sillaraRankList"></ul>
+        <ul id="sillaraRankList" aria-live="polite" aria-atomic="true" aria-label="Top 5 Sillara stores by profit"></ul>
         <h3 style="margin-top:16px;">🏆 Thoga Kada Rank</h3>
-        <ul id="thogaRankList"></ul>
-      </div>
+        <ul id="thogaRankList" aria-live="polite" aria-atomic="true" aria-label="Top 5 Thoga stores by profit"></ul>
+      </article>
     </section>
 
-    <section class="chart-section">
+    <section class="chart-section" aria-label="Sales comparison chart">
       <h2>📊 Sillara vs Thoga විකුණුම්</h2>
-      <canvas id="salesChart"></canvas>
+      <canvas id="salesChart" role="img" aria-label="Bar chart comparing Sillara and Thoga sales"></canvas>
     </section>
-  </div>
+  </main>
 
-  <footer class="main-footer">
+  <footer class="main-footer" role="contentinfo">
     <p>&copy; 2025 Smart Billing System</p>
   </footer>
 
   <!-- Fixed Floating Action Button to Bill Create -->
-  <div class="fab" title="නව බිල්පතක් තනන්න" onclick="location.href='billCreate.html'">＋</div>
+  <button class="fab" title="නව බිල්පතක් තනන්න" aria-label="නව බිල්පතක් තනන්න" onclick="location.href='billCreate.html'">＋</button>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
@@ -295,8 +358,15 @@
     document.getElementById('welcomeMsg').textContent = `👋 ආයුබෝවන් ${user.username}!`;
 
     function toggleTheme() {
-      const current = document.documentElement.getAttribute('data-theme');
-      document.documentElement.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+      const htmlEl = document.documentElement;
+      const current = htmlEl.getAttribute('data-theme');
+      const newTheme = current === 'dark' ? 'light' : 'dark';
+      htmlEl.setAttribute('data-theme', newTheme);
+
+      // Update aria-pressed for accessibility
+      const btn = document.querySelector('.toggle-theme');
+      btn.setAttribute('aria-pressed', newTheme === 'dark');
+      btn.textContent = newTheme === 'dark' ? '☀️ Mode' : '🌙 Mode';
     }
 
     function checkExpiredProducts() {
@@ -307,8 +377,9 @@
       const newlyExpired = [];
 
       for (const p of products) {
+        if (!p.expiryDate) continue;
         const expiry = new Date(p.expiryDate);
-        if (expiry < today || p.quantity <= 0) {
+        if (expiry < today || (p.quantity !== undefined && p.quantity <= 0)) {
           newlyExpired.push(p);
         } else {
           updatedProducts.push(p);
