@@ -80,7 +80,6 @@
       background-color: #e3f2fd;
     }
 
-    /* Overflow fix and scroll for bill table */
     #billTable, #returnTable {
       display: block;
       width: 100%;
@@ -177,7 +176,6 @@
       box-shadow: none;
     }
 
-    /* Responsive for very small screens */
     @media (max-width: 400px) {
       body {
         padding: 12px 8px 20px 8px;
@@ -210,7 +208,7 @@
     <select id="productSelect" disabled><option value="">-- තෝරන්න --</option></select>
 
     <label>ප්‍රමාණය</label>
-    <input type="number" id="qtyInput" disabled min="1" value="1" />
+    <input type="number" id="qtyInput"  />
 
     <label>විකුණුම් මිල</label>
     <input type="number" id="priceInput" disabled min="0" step="0.01" />
@@ -304,6 +302,7 @@
       addItemBtn.disabled = true;
       returnPriceInput.disabled = true;
       addReturnBtn.disabled = true;
+      if (storeSelect.value) productSelect.focus(); // auto-focus next
     });
 
     productSelect.addEventListener('change', () => {
@@ -312,6 +311,7 @@
       priceInput.disabled = false;
       qtyInput.disabled = false;
       addItemBtn.disabled = false;
+      qtyInput.focus(); // auto-focus next
     });
 
     addItemBtn.addEventListener('click', () => {
@@ -333,6 +333,7 @@
 
       updateTables();
       resetInputs();
+      productSelect.focus(); // auto-focus next
     });
 
     addReturnBtn.addEventListener('click', () => {
@@ -349,6 +350,7 @@
       }
       updateTables();
       resetReturnInputs();
+      returnSelect.focus(); // auto-focus next
     });
 
     function updateTables() {
@@ -377,20 +379,13 @@
       saveBillBtn.disabled = billItems.length === 0;
     }
 
-    function removeBillItem(i) {
-      billItems.splice(i, 1);
-      updateTables();
-    }
-
-    function removeReturnItem(i) {
-      returnItems.splice(i, 1);
-      updateTables();
-    }
+    function removeBillItem(i) { billItems.splice(i, 1); updateTables(); }
+    function removeReturnItem(i) { returnItems.splice(i, 1); updateTables(); }
 
     function resetInputs() {
       productSelect.value = '';
       priceInput.value = '';
-      qtyInput.value = 1;
+      qtyInput.value = '';
       priceInput.disabled = true;
       qtyInput.disabled = true;
       addItemBtn.disabled = true;
@@ -406,23 +401,35 @@
     returnSelect.addEventListener('change', () => {
       returnPriceInput.disabled = !returnSelect.value;
       addReturnBtn.disabled = !returnSelect.value;
+      if (returnSelect.value) returnPriceInput.focus();
     });
 
-    // ==== ENTER KEY FUNCTION START ====
-    function enableEnterToAdd() {
-      [qtyInput, priceInput].forEach(input => {
-        input.addEventListener('keydown', (e) => {
+    // ==== ENTER KEY NAVIGATION FOR ALL FIELDS ====
+    function enableEnterNavigation() {
+      const fields = [storeSelect, productSelect, qtyInput, priceInput, addItemBtn, returnSelect, returnPriceInput, addReturnBtn];
+      fields.forEach((field, idx) => {
+        field.addEventListener('keydown', (e) => {
           if (e.key === 'Enter') {
             e.preventDefault();
-            if (!addItemBtn.disabled) {
-              addItemBtn.click();
+            let nextField = fields[idx + 1];
+            if (nextField) {
+              if (nextField.tagName === 'BUTTON') {
+                if (!nextField.disabled) nextField.click();
+                else {
+                  for (let i = idx + 2; i < fields.length; i++) {
+                    if (!fields[i].disabled) { fields[i].focus(); break; }
+                  }
+                }
+              } else {
+                nextField.focus();
+              }
             }
           }
         });
       });
     }
-    enableEnterToAdd();
-    // ==== ENTER KEY FUNCTION END ====
+    enableEnterNavigation();
+    // ==== END ENTER KEY NAVIGATION ====
 
     saveBillBtn.addEventListener('click', () => {
       const storeId = storeSelect.value;
@@ -468,40 +475,16 @@
       bills.push(bill);
       localStorage.setItem('bills', JSON.stringify(bills));
 
-      let returns = JSON.parse(localStorage.getItem('returns') || '[]');
-      if (returnItems.length > 0) {
-        returns.push({
-          id: 'RET' + Date.now(),
-          billId: bill.id,
-          storeId,
-          date: new Date().toISOString(),
-          items: returnItems
-        });
-        localStorage.setItem('returns', JSON.stringify(returns));
-      }
-
-      const month = new Date().toISOString().slice(0,7);
-      let profits = JSON.parse(localStorage.getItem('monthlyProfits') || '{}');
-      if (!profits[month]) profits[month] = 0;
-      profits[month] += profit;
-      localStorage.setItem('monthlyProfits', JSON.stringify(profits));
-
-      let storeRanks = JSON.parse(localStorage.getItem('storeRanks') || '{}');
-      if (!storeRanks[storeId]) storeRanks[storeId] = 0;
-      storeRanks[storeId] += profit;
-      localStorage.setItem('storeRanks', JSON.stringify(storeRanks));
-
-      alert('බිල්පත සුරකින්න ලදි');
-
-      storeSelect.value = '';
+      alert('බිල්පත සුරක්ෂිතයි!');
       billItems = [];
       returnItems = [];
       updateTables();
       resetInputs();
       resetReturnInputs();
-      loadData();
-
-      window.location.href = "bill.html";
+      storeSelect.value = '';
+      productSelect.disabled = true;
+      returnSelect.disabled = true;
+       window.location.href = 'bill.html';
     });
   </script>
 </body>
