@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Stock List</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background: #fff;
+      color: #000;
+      padding: 20px;
+      user-select: none;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 1.7rem;
+      font-weight: 700;
+    }
+
+    #lineBillContainer {
+      border-top: 2px solid #000;
+      border-bottom: 2px solid #000;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .line-bill-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 12px;
+      border-bottom: 1px dashed #000;
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .line-bill-item.low-qty {
+      background-color: #eee;
+    }
+
+    /* Optional: print-friendly */
+    @media print {
+      body {
+        padding: 0;
+      }
+      h1 {
+        margin: 10px 0;
+      }
+      #lineBillContainer {
+        border: none;
+      }
+      .line-bill-item {
+        border-bottom: 1px solid #000;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>නිෂ්පාදන ලැයිස්තුව</h1>
+
+  <div id="lineBillContainer">
+    <!-- Product list will render here -->
+  </div>
+
+  <script>
+    // Load products from localStorage
+    let products = [];
+    const stored = localStorage.getItem('products');
+    if (stored) {
+      products = JSON.parse(stored);
+    }
+
+    function renderLineBill() {
+      const container = document.getElementById('lineBillContainer');
+      container.innerHTML = '';
+
+      if (products.length === 0) {
+        container.innerHTML = '<p style="text-align:center; padding:20px;">කිසිඳු නිෂ්පාදන නොමැත</p>';
+        return;
+      }
+
+      // Function to get base name (remove parenthesis content)
+      const getBaseName = name => name.replace(/\(.*\)/, '').trim().toLowerCase();
+
+      // Sort products by base name, then full name
+      const sortedProducts = [...products].sort((a, b) => {
+        const baseA = getBaseName(a.productName);
+        const baseB = getBaseName(b.productName);
+        if (baseA < baseB) return -1;
+        if (baseA > baseB) return 1;
+        return a.productName.localeCompare(b.productName);
+      });
+
+      // Render each product
+      sortedProducts.forEach(p => {
+        const div = document.createElement('div');
+        div.className = 'line-bill-item';
+        if (p.quantity <= 5) div.classList.add('low-qty');
+
+        div.innerHTML = `
+          <div>${p.productName}</div>
+          <div>${p.quantity}</div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    renderLineBill();
+  </script>
+
+</body>
+</html>
