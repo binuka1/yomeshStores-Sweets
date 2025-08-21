@@ -12,7 +12,6 @@
       padding: 17px 12px 30px 12px;
       color: #222;
     }
-
     .container {
       max-width: 480px;
       margin: 20px auto;
@@ -21,13 +20,11 @@
       padding: 25px 20px;
       box-shadow: 0 6px 20px rgba(0, 123, 255, 0.15);
     }
-
     h1, h2 {
       color: #1565c0;
       margin-bottom: 16px;
       font-weight: 700;
     }
-
     button.action-btn {
       background-color: #0288d1;
       color: #fff;
@@ -41,17 +38,14 @@
       box-shadow: 0 3px 8px rgba(2, 136, 209, 0.6);
       transition: background-color 0.3s ease;
     }
-
     button.action-btn:hover:not(:disabled) {
       background-color: #01579b;
     }
-
     button.action-btn:disabled {
       background-color: #b0d5f1;
       cursor: not-allowed;
       box-shadow: none;
     }
-
     label {
       display: block;
       margin-top: 14px;
@@ -60,9 +54,9 @@
       font-size: 1.05rem;
       color: #0d47a1;
     }
-
     select,
-    input[type="number"] {
+    input[type="number"],
+    input[list] {
       width: 100%;
       padding: 14px 16px;
       font-size: 1.1rem;
@@ -72,14 +66,13 @@
       box-sizing: border-box;
       transition: border-color 0.3s ease;
     }
-
     select:focus,
-    input[type="number"]:focus {
+    input[type="number"]:focus,
+    input[list]:focus {
       border-color: #1565c0;
       outline: none;
       background-color: #e3f2fd;
     }
-
     #billTable, #returnTable {
       display: block;
       width: 100%;
@@ -91,33 +84,28 @@
       font-size: 1rem;
       border-collapse: collapse;
     }
-
     #billTable thead, #returnTable thead,
     #billTable tbody, #returnTable tbody {
       display: table;
       width: 100%;
       table-layout: fixed;
     }
-
     th, td {
       border: none;
       padding: 12px 8px;
       text-align: center;
       word-wrap: break-word;
     }
-
     th {
       background-color: #0288d1;
       color: white;
       font-weight: 600;
       letter-spacing: 0.05em;
     }
-
     td {
       background-color: #fafafa;
       border-bottom: 1px solid #ddd;
     }
-
     button.removeBillItemBtn,
     button.removeReturnItemBtn {
       background-color: #e53935;
@@ -130,12 +118,10 @@
       font-size: 0.9rem;
       transition: background-color 0.3s ease;
     }
-
     button.removeBillItemBtn:hover,
     button.removeReturnItemBtn:hover {
       background-color: #ab000d;
     }
-
     section.bill-summary {
       margin-top: 30px;
       background: #e3f2fd;
@@ -146,11 +132,9 @@
       font-size: 1.2rem;
       box-shadow: inset 0 0 12px #90caf9;
     }
-
     section.bill-summary p {
       margin: 10px 0;
     }
-
     #saveBillBtn {
       margin-top: 25px;
       padding: 16px;
@@ -165,35 +149,19 @@
       cursor: pointer;
       transition: background-color 0.3s ease;
     }
-
     #saveBillBtn:hover:not(:disabled) {
       background-color: #2e7d32;
     }
-
     #saveBillBtn:disabled {
       background-color: #a5d6a7;
       cursor: not-allowed;
       box-shadow: none;
     }
-
     @media (max-width: 400px) {
-      body {
-        padding: 12px 8px 20px 8px;
-      }
-
-      h1, h2 {
-        font-size: 1.25rem;
-      }
-
-      button.action-btn, #saveBillBtn {
-        font-size: 1rem;
-        padding: 14px 0;
-      }
-
-      th, td {
-        font-size: 0.85rem;
-        padding: 8px 5px;
-      }
+      body { padding: 12px 8px 20px 8px; }
+      h1, h2 { font-size: 1.25rem; }
+      button.action-btn, #saveBillBtn { font-size: 1rem; padding: 14px 0; }
+      th, td { font-size: 0.85rem; padding: 8px 5px; }
     }
   </style>
 </head>
@@ -205,7 +173,8 @@
     <select id="storeSelect"><option value="">-- තෝරන්න --</option></select>
 
     <label>නිෂ්පාදනය තෝරන්න</label>
-    <select id="productSelect" disabled><option value="">-- තෝරන්න --</option></select>
+    <input list="productList" id="productSelect" disabled placeholder="-- තෝරන්න --"/>
+    <datalist id="productList"></datalist>
 
     <label>ප්‍රමාණය</label>
     <input type="number" id="qtyInput"  />
@@ -244,248 +213,251 @@
     <button id="saveBillBtn" disabled>බිල්පත සුරකින්න</button>
   </div>
 
-  <script>
-    let stores = JSON.parse(localStorage.getItem('stores') || '[]');
-    let products = JSON.parse(localStorage.getItem('products') || '[]');
-    let bills = JSON.parse(localStorage.getItem('bills') || '[]');
-    let outOfStockProducts = JSON.parse(localStorage.getItem('outOfStockProducts') || '[]');
+<script>
+let stores = JSON.parse(localStorage.getItem('stores') || '[]');
+let products = JSON.parse(localStorage.getItem('products') || '[]');
+let bills = JSON.parse(localStorage.getItem('bills') || '[]');
+let outOfStockProducts = JSON.parse(localStorage.getItem('outOfStockProducts') || '[]');
 
-    let billItems = [], returnItems = [];
+let billItems = [], returnItems = [];
 
-    const storeSelect = document.getElementById('storeSelect');
-    const productSelect = document.getElementById('productSelect');
-    const priceInput = document.getElementById('priceInput');
-    const qtyInput = document.getElementById('qtyInput');
-    const addItemBtn = document.getElementById('addItemBtn');
+const storeSelect = document.getElementById('storeSelect');
+const productSelect = document.getElementById('productSelect');
+const priceInput = document.getElementById('priceInput');
+const qtyInput = document.getElementById('qtyInput');
+const addItemBtn = document.getElementById('addItemBtn');
 
-    const billTableBody = document.querySelector('#billTable tbody');
-    const returnSelect = document.getElementById('returnSelect');
-    const returnPriceInput = document.getElementById('returnPriceInput');
-    const addReturnBtn = document.getElementById('addReturnBtn');
-    const returnTableBody = document.querySelector('#returnTable tbody');
+const billTableBody = document.querySelector('#billTable tbody');
+const returnSelect = document.getElementById('returnSelect');
+const returnPriceInput = document.getElementById('returnPriceInput');
+const addReturnBtn = document.getElementById('addReturnBtn');
+const returnTableBody = document.querySelector('#returnTable tbody');
 
-    const totalAmountSpan = document.getElementById('totalAmount');
-    const returnAmountSpan = document.getElementById('returnAmount');
-    const netAmountSpan = document.getElementById('netAmount');
-    const saveBillBtn = document.getElementById('saveBillBtn');
+const totalAmountSpan = document.getElementById('totalAmount');
+const returnAmountSpan = document.getElementById('returnAmount');
+const netAmountSpan = document.getElementById('netAmount');
+const saveBillBtn = document.getElementById('saveBillBtn');
 
-    function loadData() {
-      storeSelect.innerHTML = '<option value="">-- තෝරන්න --</option>';
-      stores.forEach(s => {
-        storeSelect.innerHTML += `<option value="${s.id}">${s.storeName || s.name}</option>`;
-      });
+function loadData() {
+  storeSelect.innerHTML = '<option value="">-- තෝරන්න --</option>';
+  stores.forEach(s => storeSelect.innerHTML += `<option value="${s.id}">${s.storeName || s.name}</option>`);
+  
+  returnSelect.innerHTML = '<option value="">-- තෝරන්න --</option>';
+  products.forEach(p => returnSelect.innerHTML += `<option value="${p.id}">${p.productName || p.name}</option>`);
+}
+loadData();
 
-      returnSelect.innerHTML = '<option value="">-- තෝරන්න --</option>';
-      products.forEach(p => {
-        returnSelect.innerHTML += `<option value="${p.id}">${p.productName || p.name}</option>`;
-      });
-    }
+storeSelect.addEventListener('change', () => {
+  billItems = [];
+  returnItems = [];
+  updateTables();
+  resetInputs();
 
-    loadData();
+  const productList = document.getElementById('productList');
+  productList.innerHTML = '';
+  const available = products.filter(p => p.quantity > 0);
+  available.forEach(p => {
+    const option = document.createElement('option');
+    option.value = p.productName || p.name;
+    option.dataset.id = p.id;
+    option.dataset.price = p.sellingPrice;
+    option.textContent = `${p.productName || p.name} (Stock: ${p.quantity})`;
+    productList.appendChild(option);
+  });
 
-    storeSelect.addEventListener('change', () => {
-      billItems = [];
-      returnItems = [];
-      updateTables();
-      resetInputs();
+  productSelect.disabled = !storeSelect.value;
+  returnSelect.disabled = !storeSelect.value;
+  priceInput.disabled = true;
+  qtyInput.disabled = true;
+  addItemBtn.disabled = true;
+  returnPriceInput.disabled = true;
+  addReturnBtn.disabled = true;
+  if (storeSelect.value) productSelect.focus();
+});
 
-      const available = products.filter(p => p.quantity > 0);
-      productSelect.innerHTML = '<option value="">-- තෝරන්න --</option>';
-      available.forEach(p => {
-        productSelect.innerHTML += `<option value="${p.id}" data-price="${p.sellingPrice}">${p.productName || p.name} (Stock: ${p.quantity})</option>`;
-      });
+productSelect.addEventListener('input', () => {
+  const val = productSelect.value.toLowerCase();
+  const option = [...document.getElementById('productList').options].find(o => o.value.toLowerCase() === val);
+  if (!option) {
+    priceInput.value = '';
+    priceInput.disabled = true;
+    qtyInput.disabled = true;
+    addItemBtn.disabled = true;
+    return;
+  }
+  const price = parseFloat(option.dataset.price || 0);
+  priceInput.value = price.toFixed(2);
+  priceInput.disabled = false;
+  qtyInput.disabled = false;
+  addItemBtn.disabled = false;
+  qtyInput.focus();
+});
 
-      productSelect.disabled = !storeSelect.value;
-      returnSelect.disabled = !storeSelect.value;
-      priceInput.disabled = true;
-      qtyInput.disabled = true;
-      addItemBtn.disabled = true;
-      returnPriceInput.disabled = true;
-      addReturnBtn.disabled = true;
-      if (storeSelect.value) productSelect.focus(); // auto-focus next
-    });
+// ====== Remaining logic unchanged: addItemBtn, addReturnBtn, updateTables, saveBillBtn ======
+addItemBtn.addEventListener('click', () => {
+  const id = [...document.getElementById('productList').options].find(o => o.value === productSelect.value)?.dataset.id;
+  const qty = parseInt(qtyInput.value);
+  const price = parseFloat(priceInput.value);
+  const product = products.find(p => p.id === id);
+  if (!id || !product || qty <= 0 || isNaN(price)) return alert('වැරදි දත්ත');
+  if (qty > product.quantity) return alert('තොග අඩුයි');
 
-    productSelect.addEventListener('change', () => {
-      const price = parseFloat(productSelect.selectedOptions[0]?.dataset.price || 0);
-      priceInput.value = price.toFixed(2);
-      priceInput.disabled = false;
-      qtyInput.disabled = false;
-      addItemBtn.disabled = false;
-      qtyInput.focus(); // auto-focus next
-    });
+  const existing = billItems.find(i => i.id === id);
+  if (existing) {
+    if (existing.qty + qty > product.quantity) return alert('තොග ඉක්මවයි');
+    existing.qty += qty;
+    existing.price = price;
+  } else {
+    billItems.push({ id, name: product.productName || product.name, qty, price });
+  }
 
-    addItemBtn.addEventListener('click', () => {
-      const id = productSelect.value;
-      const qty = parseInt(qtyInput.value);
-      const price = parseFloat(priceInput.value);
-      const product = products.find(p => p.id === id);
-      if (!id || !product || qty <= 0 || isNaN(price)) return alert('වැරදි දත්ත');
-      if (qty > product.quantity) return alert('තොග අඩුයි');
+  updateTables();
+  resetInputs();
+  productSelect.focus();
+});
 
-      const existing = billItems.find(i => i.id === id);
-      if (existing) {
-        if (existing.qty + qty > product.quantity) return alert('තොග ඉක්මවයි');
-        existing.qty += qty;
-        existing.price = price;
-      } else {
-        billItems.push({ id, name: product.productName || product.name, qty, price });
-      }
+addReturnBtn.addEventListener('click', () => {
+  const id = returnSelect.value;
+  const returnPrice = parseFloat(returnPriceInput.value);
+  const prod = products.find(p => p.id === id);
+  if (!id || isNaN(returnPrice)) return alert('වැරදි ආපසු අයිතමය');
 
-      updateTables();
-      resetInputs();
-      productSelect.focus(); // auto-focus next
-    });
+  const exist = returnItems.find(r => r.id === id);
+  if (exist) {
+    exist.returnPrice = returnPrice;
+  } else {
+    returnItems.push({ id, name: prod?.productName || prod?.name || 'Unknown', returnPrice });
+  }
+  updateTables();
+  resetReturnInputs();
+  returnSelect.focus();
+});
 
-    addReturnBtn.addEventListener('click', () => {
-      const id = returnSelect.value;
-      const returnPrice = parseFloat(returnPriceInput.value);
-      const prod = products.find(p => p.id === id);
-      if (!id || isNaN(returnPrice)) return alert('වැරදි ආපසු අයිතමය');
+function updateTables() {
+  billTableBody.innerHTML = billItems.map((i, idx) => `<tr>
+    <td>${i.name}</td>
+    <td>${i.qty}</td>
+    <td>Rs. ${i.price.toFixed(2)}</td>
+    <td>Rs. ${(i.qty * i.price).toFixed(2)}</td>
+    <td><button onclick="removeBillItem(${idx})" class="removeBillItemBtn">ඉවත්</button></td>
+  </tr>`).join('');
 
-      const exist = returnItems.find(r => r.id === id);
-      if (exist) {
-        exist.returnPrice = returnPrice;
-      } else {
-        returnItems.push({ id, name: prod?.productName || prod?.name || 'Unknown', returnPrice });
-      }
-      updateTables();
-      resetReturnInputs();
-      returnSelect.focus(); // auto-focus next
-    });
+  returnTableBody.innerHTML = returnItems.map((r, idx) => `<tr>
+    <td>${r.name}</td>
+    <td>Rs. ${r.returnPrice.toFixed(2)}</td>
+    <td><button onclick="removeReturnItem(${idx})" class="removeReturnItemBtn">ඉවත්</button></td>
+  </tr>`).join('');
 
-    function updateTables() {
-      billTableBody.innerHTML = billItems.map((i, idx) => `<tr>
-        <td>${i.name}</td>
-        <td>${i.qty}</td>
-        <td>Rs. ${i.price.toFixed(2)}</td>
-        <td>Rs. ${(i.qty * i.price).toFixed(2)}</td>
-        <td><button onclick="removeBillItem(${idx})" class="removeBillItemBtn">ඉවත්</button></td>
-      </tr>`).join('');
+  const total = billItems.reduce((t, i) => t + i.qty * i.price, 0);
+  const returns = returnItems.reduce((t, r) => t + r.returnPrice, 0);
+  const net = Math.max(0, total - returns);
 
-      returnTableBody.innerHTML = returnItems.map((r, idx) => `<tr>
-        <td>${r.name}</td>
-        <td>Rs. ${r.returnPrice.toFixed(2)}</td>
-        <td><button onclick="removeReturnItem(${idx})" class="removeReturnItemBtn">ඉවත්</button></td>
-      </tr>`).join('');
+  totalAmountSpan.textContent = total.toFixed(2);
+  returnAmountSpan.textContent = returns.toFixed(2);
+  netAmountSpan.textContent = net.toFixed(2);
 
-      const total = billItems.reduce((t, i) => t + i.qty * i.price, 0);
-      const returns = returnItems.reduce((t, r) => t + r.returnPrice, 0);
-      const net = Math.max(0, total - returns);
+  saveBillBtn.disabled = billItems.length === 0;
+}
 
-      totalAmountSpan.textContent = total.toFixed(2);
-      returnAmountSpan.textContent = returns.toFixed(2);
-      netAmountSpan.textContent = net.toFixed(2);
+function removeBillItem(i) { billItems.splice(i, 1); updateTables(); }
+function removeReturnItem(i) { returnItems.splice(i, 1); updateTables(); }
 
-      saveBillBtn.disabled = billItems.length === 0;
-    }
+function resetInputs() {
+  productSelect.value = '';
+  priceInput.value = '';
+  qtyInput.value = '';
+  priceInput.disabled = true;
+  qtyInput.disabled = true;
+  addItemBtn.disabled = true;
+}
 
-    function removeBillItem(i) { billItems.splice(i, 1); updateTables(); }
-    function removeReturnItem(i) { returnItems.splice(i, 1); updateTables(); }
+function resetReturnInputs() {
+  returnSelect.value = '';
+  returnPriceInput.value = '';
+  returnPriceInput.disabled = true;
+  addReturnBtn.disabled = true;
+}
 
-    function resetInputs() {
-      productSelect.value = '';
-      priceInput.value = '';
-      qtyInput.value = '';
-      priceInput.disabled = true;
-      qtyInput.disabled = true;
-      addItemBtn.disabled = true;
-    }
+returnSelect.addEventListener('change', () => {
+  returnPriceInput.disabled = !returnSelect.value;
+  addReturnBtn.disabled = !returnSelect.value;
+  if (returnSelect.value) returnPriceInput.focus();
+});
 
-    function resetReturnInputs() {
-      returnSelect.value = '';
-      returnPriceInput.value = '';
-      returnPriceInput.disabled = true;
-      addReturnBtn.disabled = true;
-    }
-
-    returnSelect.addEventListener('change', () => {
-      returnPriceInput.disabled = !returnSelect.value;
-      addReturnBtn.disabled = !returnSelect.value;
-      if (returnSelect.value) returnPriceInput.focus();
-    });
-
-    // ==== ENTER KEY NAVIGATION FOR ALL FIELDS ====
-    function enableEnterNavigation() {
-      const fields = [storeSelect, productSelect, qtyInput, priceInput, addItemBtn, returnSelect, returnPriceInput, addReturnBtn];
-      fields.forEach((field, idx) => {
-        field.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter') {
-            e.preventDefault();
-            let nextField = fields[idx + 1];
-            if (nextField) {
-              if (nextField.tagName === 'BUTTON') {
-                if (!nextField.disabled) nextField.click();
-                else {
-                  for (let i = idx + 2; i < fields.length; i++) {
-                    if (!fields[i].disabled) { fields[i].focus(); break; }
-                  }
-                }
-              } else {
-                nextField.focus();
+// ENTER navigation logic (unchanged)
+function enableEnterNavigation() {
+  const fields = [storeSelect, productSelect, qtyInput, priceInput, addItemBtn, returnSelect, returnPriceInput, addReturnBtn];
+  fields.forEach((field, idx) => {
+    field.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        let nextField = fields[idx + 1];
+        if (nextField) {
+          if (nextField.tagName === 'BUTTON') {
+            if (!nextField.disabled) nextField.click();
+            else {
+              for (let i = idx + 2; i < fields.length; i++) {
+                if (!fields[i].disabled) { fields[i].focus(); break; }
               }
             }
-          }
-        });
-      });
-    }
-    enableEnterNavigation();
-    // ==== END ENTER KEY NAVIGATION ====
-
-    saveBillBtn.addEventListener('click', () => {
-      const storeId = storeSelect.value;
-      if (!storeId || billItems.length === 0) return alert('කරුණාකර තොරතුරු පුරවන්න');
-
-      billItems.forEach(i => {
-        const index = products.findIndex(p => p.id === i.id);
-        if (index !== -1) {
-          products[index].quantity -= i.qty;
-          if (products[index].quantity <= 0) {
-            const already = outOfStockProducts.some(p => p.id === products[index].id);
-            if (!already) outOfStockProducts.push(products[index]);
-          }
+          } else { nextField.focus(); }
         }
-      });
-
-      localStorage.setItem('products', JSON.stringify(products));
-      localStorage.setItem('outOfStockProducts', JSON.stringify(outOfStockProducts));
-
-      let profit = 0;
-      billItems.forEach(i => {
-        const p = products.find(p => p.id === i.id);
-        const cost = p?.costPrice || 0;
-        profit += (i.price - cost) * i.qty;
-      });
-
-      const returnTotal = returnItems.reduce((acc, r) => acc + r.returnPrice, 0);
-      profit -= returnTotal;
-      if (profit < 0) profit = 0;
-
-      const bill = {
-        id: 'BIL' + Date.now(),
-        storeId,
-        date: new Date().toISOString(),
-        items: billItems,
-        returns: returnItems,
-        grossAmount: billItems.reduce((acc, i) => acc + i.qty * i.price, 0),
-        returnAmount: returnTotal,
-        netAmount: Math.max(0, billItems.reduce((acc, i) => acc + i.qty * i.price, 0) - returnTotal),
-        profit
-      };
-
-      bills.push(bill);
-      localStorage.setItem('bills', JSON.stringify(bills));
-
-      alert('බිල්පත සුරක්ෂිතයි!');
-      billItems = [];
-      returnItems = [];
-      updateTables();
-      resetInputs();
-      resetReturnInputs();
-      storeSelect.value = '';
-      productSelect.disabled = true;
-      returnSelect.disabled = true;
-       window.location.href = 'bill.html';
+      }
     });
-  </script>
+  });
+}
+enableEnterNavigation();
+
+saveBillBtn.addEventListener('click', () => {
+  const storeId = storeSelect.value;
+  if (!storeId || billItems.length === 0) return alert('කරුණාකර තොරතුරු පුරවන්න');
+
+  billItems.forEach(i => {
+    const index = products.findIndex(p => p.id === i.id);
+    if (index !== -1) {
+      products[index].quantity -= i.qty;
+      if (products[index].quantity <= 0) {
+        const already = outOfStockProducts.some(p => p.id === products[index].id);
+        if (!already) outOfStockProducts.push(products[index]);
+      }
+    }
+  });
+
+  localStorage.setItem('products', JSON.stringify(products));
+  localStorage.setItem('outOfStockProducts', JSON.stringify(outOfStockProducts));
+
+  let profit = 0;
+  billItems.forEach(i => {
+    const p = products.find(p => p.id === i.id);
+    const cost = p?.costPrice || 0;
+    profit += (i.price - cost) * i.qty;
+  });
+
+  const returnTotal = returnItems.reduce((acc, r) => acc + r.returnPrice, 0);
+  profit -= returnTotal;
+  if (profit < 0) profit = 0;
+
+  const bill = {
+    id: 'BIL' + Date.now(),
+    storeId,
+    date: new Date().toISOString(),
+    items: [...billItems],
+    returns: [...returnItems],
+    grossAmount: billItems.reduce((t, i) => t + i.qty * i.price, 0),
+    netAmount: billItems.reduce((t, i) => t + i.qty * i.price, 0) - returnTotal,
+    profit
+  };
+  bills.push(bill);
+  localStorage.setItem('bills', JSON.stringify(bills));
+
+  alert('බිල්පත සුරක්ෂිතයි');
+  billItems = [];
+  returnItems = [];
+  updateTables();
+  resetInputs();
+  resetReturnInputs();
+  storeSelect.value = '';
+});
+</script>
 </body>
 </html>
