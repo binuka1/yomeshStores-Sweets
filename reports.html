@@ -133,37 +133,52 @@
       display: block;
     }
 
-    /* Responsive */
+    /* Sold Products Modal */
+    #soldProductsModal {
+      display: none;
+      position: fixed;
+      top:0; left:0;
+      width:100%; height:100%;
+      background: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+
+    #soldProductsModal div {
+      background:#fff;
+      border-radius:12px;
+      padding:20px;
+      max-width:500px;
+      width:90%;
+      max-height:80%;
+      overflow-y:auto;
+      position: relative;
+    }
+
+    #soldProductsList li {
+      padding: 5px 0;
+    }
+
+    #closeSoldModal {
+      margin-top: 15px;
+      padding: 10px 15px;
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
     @media (max-width: 768px) {
-      body {
-        padding: 15px 10px;
-      }
-      .container {
-        padding: 20px 15px;
-        max-width: 100%;
-      }
-      .filters select,
-      .filters button {
-        flex: 1 1 100%;
-        min-width: auto;
-      }
-      .summary {
-        flex-direction: column;
-        gap: 15px;
-      }
-      .card {
-        flex: 1 1 100%;
-        padding: 15px 10px;
-      }
-      h1 {
-        font-size: 2rem;
-      }
-      .card h3 {
-        font-size: 1.1rem;
-      }
-      .card p {
-        font-size: 1.6rem;
-      }
+      body { padding: 15px 10px; }
+      .container { padding: 20px 15px; max-width: 100%; }
+      .filters select, .filters button { flex: 1 1 100%; min-width: auto; }
+      .summary { flex-direction: column; gap: 15px; }
+      .card { flex: 1 1 100%; padding: 15px 10px; }
+      h1 { font-size: 2rem; }
+      .card h3 { font-size: 1.1rem; }
+      .card p { font-size: 1.6rem; }
     }
   </style>
 </head>
@@ -172,36 +187,46 @@
     <h1>📊 වාර්තා පුවරුව</h1>
 
     <div class="filters">
-      <select id="yearSelect" aria-label="වසර තෝරන්න"></select>
-      <select id="monthSelect" aria-label="මාසය තෝරන්න"></select>
-      <select id="storeSelect" aria-label="කඩය තෝරන්න">
+      <select id="yearSelect"></select>
+      <select id="monthSelect"></select>
+      <select id="storeSelect">
         <option value="">-- කඩය තෝරන්න --</option>
       </select>
-      <button class="clear-btn" id="clearFiltersBtn" title="තෝරාගත් වසර, මාසය හා කඩ මකන්න">Clear Filters</button>
+      <button class="clear-btn" id="clearFiltersBtn" title="Clear Filters">Clear Filters</button>
+      <button class="clear-btn" id="showSoldBtn" title="Show Sold Products">විකුණුපු සෑම දේම</button>
     </div>
 
-    <div class="summary" aria-live="polite" aria-atomic="true">
-      <div class="card" role="region" aria-label="මුළු ලාභය">
-        <h3>මුළු ලාභය (ලාභය - වියදම් - ආපසු ලැබීම්)</h3>
+    <div class="summary">
+      <div class="card">
+        <h3>මුළු ලාභය (ලාභය - වියදම්)</h3>
         <p id="netProfit">Rs. 0.00</p>
       </div>
-      <div class="card" role="region" aria-label="මුළු විකුණුම්">
+      <div class="card">
         <h3>මුළු විකුණුම්</h3>
         <p id="totalSales">Rs. 0.00</p>
       </div>
-      <div class="card" role="region" aria-label="මුළු වියදම්">
+      <div class="card">
         <h3>මුළු වියදම්</h3>
         <p id="totalExpenses">Rs. 0.00</p>
       </div>
-      <div class="card" role="region" aria-label="මුළු ආපසු ලැබීම්">
-        <h3>මුළු ආපසු ලැබීම්</h3>
-        <p id="totalReturns">Rs. 0.00</p>
+      <div class="card">
+        <h3>මුළු ආපසු ලැබීම් (ගණන)</h3>
+        <p id="totalReturns">0</p>
       </div>
     </div>
 
-    <canvas id="salesChart" aria-label="දිනපතා විකුණුම් වර්ගකරණය" role="img"></canvas>
-    <canvas id="topItemsChart" aria-label="ඉහළ විකිණුණු අයිතම වර්ගකරණය" role="img"></canvas>
-    <canvas id="returnItemsChart" aria-label="ආපසු ලැබුණු අයිතම වර්ගකරණය" role="img"></canvas>
+    <canvas id="salesChart"></canvas>
+    <canvas id="topItemsChart"></canvas>
+    <canvas id="returnItemsChart"></canvas>
+  </div>
+
+  <!-- Sold Products Modal -->
+  <div id="soldProductsModal">
+    <div>
+      <h2 style="margin-top:0;">විකුණුපු අයිතම</h2>
+      <ul id="soldProductsList"></ul>
+      <button id="closeSoldModal">Close</button>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -209,55 +234,52 @@
     const monthNames = ['ජනවාරි','පෙබ','මාර්තු','අප්‍රේල්','මැයි','ජුනි','ජුලි','අගෝ','සැප්','ඔක්','නොවැ','දෙසැ'];
     const bills = JSON.parse(localStorage.getItem('bills') || '[]');
     const expenses = JSON.parse(localStorage.getItem('expenses') || '[]');
-    const returns = JSON.parse(localStorage.getItem('returns') || '[]');
     const stores = JSON.parse(localStorage.getItem('stores') || '[]');
 
     const yearSelect = document.getElementById('yearSelect');
     const monthSelect = document.getElementById('monthSelect');
     const storeSelect = document.getElementById('storeSelect');
-
     const netProfitEl = document.getElementById('netProfit');
     const totalSalesEl = document.getElementById('totalSales');
     const totalExpensesEl = document.getElementById('totalExpenses');
     const totalReturnsEl = document.getElementById('totalReturns');
     const clearFiltersBtn = document.getElementById('clearFiltersBtn');
-
     const salesChartCtx = document.getElementById('salesChart').getContext('2d');
     const topItemsCtx = document.getElementById('topItemsChart').getContext('2d');
     const returnItemsCtx = document.getElementById('returnItemsChart').getContext('2d');
+    const showSoldBtn = document.getElementById('showSoldBtn');
+    const soldProductsModal = document.getElementById('soldProductsModal');
+    const soldProductsList = document.getElementById('soldProductsList');
+    const closeSoldModal = document.getElementById('closeSoldModal');
 
     let salesChart, topItemsChart, returnItemsChart;
 
     function populateYears() {
       const yearsSet = new Set([
         ...bills.map(b => new Date(b.date).getFullYear()),
-        ...expenses.map(e => new Date(e.date).getFullYear()),
-        ...returns.map(r => new Date(r.date).getFullYear())
+        ...expenses.map(e => new Date(e.date).getFullYear())
       ]);
-      const years = [...yearsSet].sort((a,b) => a-b);
+      const years = [...yearsSet].sort((a,b)=>a-b);
       yearSelect.innerHTML = '<option value="">-- වසර තෝරන්න --</option>';
-      years.forEach(y => {
-        yearSelect.innerHTML += `<option value="${y}">${y}</option>`;
-      });
+      years.forEach(y=>yearSelect.innerHTML+=`<option value="${y}">${y}</option>`);
     }
 
     function populateMonths() {
       monthSelect.innerHTML = '<option value="">-- මාසය තෝරන්න --</option>';
-      monthNames.forEach((m, i) => {
-        monthSelect.innerHTML += `<option value="${i+1}">${m}</option>`;
-      });
+      monthNames.forEach((m,i)=>monthSelect.innerHTML+=`<option value="${i+1}">${m}</option>`);
     }
 
     function populateStores() {
       storeSelect.innerHTML = '<option value="">-- කඩය තෝරන්න --</option>';
-      stores.forEach(store => {
-        const name = store.storeName || store.name || 'නොදන්නා';
-        storeSelect.innerHTML += `<option value="${store.id}">${name}</option>`;
-      });
+      stores.forEach(s=>storeSelect.innerHTML+=`<option value="${s.id}">${s.storeName||s.name}</option>`);
     }
 
     function formatCurrency(amount) {
-      return 'Rs. ' + amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      return 'Rs. '+amount.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+    }
+
+    function getAllReturns() {
+      return bills.flatMap(b => (b.returns||[]).map(r => ({ ...r, storeId: b.storeId, date: b.date })));
     }
 
     function filterData() {
@@ -265,176 +287,113 @@
       const month = monthSelect.value ? +monthSelect.value : null;
       const storeId = storeSelect.value || null;
 
-      const filteredBills = bills.filter(b => {
-        const d = new Date(b.date);
-        return (!year || d.getFullYear() === year) &&
-               (!month || (d.getMonth() + 1) === month) &&
-               (!storeId || b.storeId === storeId);
+      const filteredBills = bills.filter(b=>{
+        const d=new Date(b.date);
+        return (!year||d.getFullYear()===year)&&(!month||(d.getMonth()+1)===month)&&(!storeId||b.storeId===storeId);
       });
 
-      const filteredExpenses = expenses.filter(e => {
-        const d = new Date(e.date);
-        return (!year || d.getFullYear() === year) &&
-               (!month || (d.getMonth() + 1) === month) &&
-               (!storeId || e.storeId === storeId);
+      const filteredExpenses = expenses.filter(e=>{
+        const d=new Date(e.date);
+        return (!year||d.getFullYear()===year)&&(!month||(d.getMonth()+1)===month)&&(!storeId||e.storeId===storeId);
       });
 
-      const filteredReturns = returns.filter(r => {
-        const d = new Date(r.date);
-        return (!year || d.getFullYear() === year) &&
-               (!month || (d.getMonth() + 1) === month) &&
-               (!storeId || r.storeId === storeId);
+      const allReturns = getAllReturns();
+      const filteredReturns = allReturns.filter(r=>{
+        const d=new Date(r.date);
+        return (!year||d.getFullYear()===year)&&(!month||(d.getMonth()+1)===month)&&(!storeId||r.storeId===storeId);
       });
 
-      return { filteredBills, filteredExpenses, filteredReturns };
+      return {filteredBills, filteredExpenses, filteredReturns};
     }
 
     function updateReport() {
-      const { filteredBills, filteredExpenses, filteredReturns } = filterData();
+      const {filteredBills, filteredExpenses, filteredReturns} = filterData();
 
-      const totalProfitFromBills = filteredBills.reduce((sum, b) => sum + (b.profit || 0), 0);
-      const totalSales = filteredBills.reduce((sum, b) => sum + (b.netAmount || 0), 0);
-      const totalExpenses = filteredExpenses.reduce((sum, e) => sum + (parseFloat(e.cost) || 0), 0);
-
-      let totalReturns = 0;
-      const returnItemsMap = {};
-      filteredReturns.forEach(r => {
-        (r.items || []).forEach(item => {
-          totalReturns += (item.returnPrice || 0);
-          if (returnItemsMap[item.name]) {
-            returnItemsMap[item.name] += 1;
-          } else {
-            returnItemsMap[item.name] = 1;
-          }
-        });
-      });
-
-      const netProfit = totalProfitFromBills - totalExpenses - totalReturns;
+      const totalProfitFromBills = filteredBills.reduce((sum,b)=>sum+(b.profit||0),0);
+      const totalSales = filteredBills.reduce((sum,b)=>sum+(b.netAmount||0),0);
+      const totalExpenses = filteredExpenses.reduce((sum,e)=>sum+(parseFloat(e.cost)||0),0);
+      const netProfit = totalProfitFromBills - totalExpenses;
 
       netProfitEl.textContent = formatCurrency(netProfit);
       totalSalesEl.textContent = formatCurrency(totalSales);
       totalExpensesEl.textContent = formatCurrency(totalExpenses);
-      totalReturnsEl.textContent = formatCurrency(totalReturns);
+      totalReturnsEl.textContent = filteredReturns.length;
 
+      // Top items sold chart
       const itemMap = {};
-      filteredBills.forEach(b => {
-        (b.items || []).forEach(i => {
-          itemMap[i.name] = (itemMap[i.name] || 0) + i.qty;
-        });
-      });
-
+      filteredBills.forEach(b=> (b.items||[]).forEach(i=> { itemMap[i.name]=(itemMap[i.name]||0)+i.qty } ));
       const itemNames = Object.keys(itemMap);
       const itemQtys = Object.values(itemMap);
 
-      if (topItemsChart) topItemsChart.destroy();
-      topItemsChart = new Chart(topItemsCtx, {
-        type: 'bar',
-        data: {
-          labels: itemNames,
-          datasets: [{
-            label: 'Qty Sold',
-            data: itemQtys,
-            backgroundColor: '#3b82f6'
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { display: false },
-            title: { display: true, text: 'ඉහළ විකිණුණු අයිතම' }
-          },
-          animation: {
-            duration: 1000,
-            easing: 'easeOutQuart'
-          }
-        }
+      if(topItemsChart) topItemsChart.destroy();
+      topItemsChart = new Chart(topItemsCtx,{
+        type:'bar',
+        data:{labels:itemNames,datasets:[{label:'Qty Sold',data:itemQtys,backgroundColor:'#3b82f6'}]},
+        options:{responsive:true,plugins:{legend:{display:false},title:{display:true,text:'ඉහළ විකිණුණු අයිතම'}},animation:{duration:1000,easing:'easeOutQuart'}}
       });
 
+      // Daily sales chart
       const dailySales = {};
-      filteredBills.forEach(b => {
-        const day = new Date(b.date).getDate();
-        dailySales[day] = (dailySales[day] || 0) + (b.netAmount || 0);
+      filteredBills.forEach(b=>{
+        const day=new Date(b.date).getDate();
+        dailySales[day]=(dailySales[day]||0)+(b.netAmount||0);
+      });
+      const days=Object.keys(dailySales).sort((a,b)=>a-b);
+      const values=days.map(d=>dailySales[d]);
+
+      if(salesChart) salesChart.destroy();
+      salesChart=new Chart(salesChartCtx,{
+        type:'line',
+        data:{labels:days,datasets:[{label:'දිනපතා විකුණුම්',data:values,borderColor:'#2563eb',backgroundColor:'rgba(37, 99, 235, 0.3)',fill:true,tension:0.3,pointRadius:5,pointHoverRadius:7}]},
+        options:{responsive:true,plugins:{legend:{display:true}},interaction:{mode:'nearest',axis:'x',intersect:false},animation:{duration:1200,easing:'easeOutQuart'}}
       });
 
-      const days = Object.keys(dailySales).sort((a,b) => a - b);
-      const values = days.map(d => dailySales[d]);
-
-      if (salesChart) salesChart.destroy();
-      salesChart = new Chart(salesChartCtx, {
-        type: 'line',
-        data: {
-          labels: days,
-          datasets: [{
-            label: 'දිනපතා විකුණුම්',
-            data: values,
-            borderColor: '#2563eb',
-            backgroundColor: 'rgba(37, 99, 235, 0.3)',
-            fill: true,
-            tension: 0.3,
-            pointRadius: 5,
-            pointHoverRadius: 7
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { display: true }
-          },
-          interaction: {
-            mode: 'nearest',
-            axis: 'x',
-            intersect: false
-          },
-          animation: {
-            duration: 1200,
-            easing: 'easeOutQuart'
-          }
-        }
+      // Return items chart
+      const returnItemsMap = {};
+      filteredReturns.forEach(r=>{
+        const name = r.name || 'Unknown';
+        returnItemsMap[name] = (returnItemsMap[name]||0)+1;
       });
+      const returnItemNames=Object.keys(returnItemsMap);
+      const returnItemCounts=Object.values(returnItemsMap);
 
-      const returnItemNames = Object.keys(returnItemsMap);
-      const returnItemCounts = Object.values(returnItemsMap);
-
-      if (returnItemsChart) returnItemsChart.destroy();
-      returnItemsChart = new Chart(returnItemsCtx, {
-        type: 'bar',
-        data: {
-          labels: returnItemNames,
-          datasets: [{
-            label: 'ආපසු ලැබුණු ප්‍රමාණය',
-            data: returnItemCounts,
-            backgroundColor: '#ef4444'
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { display: false },
-            title: { display: true, text: 'ආපසු ලැබුණු අයිතම' }
-          },
-          animation: {
-            duration: 1000,
-            easing: 'easeOutQuart'
-          }
-        }
+      if(returnItemsChart) returnItemsChart.destroy();
+      returnItemsChart=new Chart(returnItemsCtx,{
+        type:'bar',
+        data:{labels:returnItemNames,datasets:[{label:'ආපසු ලැබුණු ප්‍රමාණය',data:returnItemCounts,backgroundColor:'#ef4444'}]},
+        options:{responsive:true,plugins:{legend:{display:false},title:{display:true,text:'ආපසු ලැබුණු අයිතම'}},animation:{duration:1000,easing:'easeOutQuart'}}
       });
     }
 
-    clearFiltersBtn.addEventListener('click', () => {
-      yearSelect.value = '';
-      monthSelect.value = '';
-      storeSelect.value = '';
-      updateReport();
+    clearFiltersBtn.addEventListener('click',()=>{ yearSelect.value=''; monthSelect.value=''; storeSelect.value=''; updateReport(); });
+    yearSelect.addEventListener('change',updateReport);
+    monthSelect.addEventListener('change',updateReport);
+    storeSelect.addEventListener('change',updateReport);
+
+    // Sold Products Popup
+    showSoldBtn.addEventListener('click', () => {
+      const { filteredBills } = filterData();
+      const productMap = {};
+      let totalCount = 0;
+      filteredBills.forEach(b => (b.items || []).forEach(i => { productMap[i.name] = (productMap[i.name] || 0) + i.qty; totalCount += i.qty; }));
+
+      soldProductsList.innerHTML = '';
+      if(Object.keys(productMap).length === 0) soldProductsList.innerHTML = '<li>කිසිම අයිතමයක් නොමැත</li>';
+      else {
+        Object.entries(productMap).forEach(([name, qty]) => { const li = document.createElement('li'); li.textContent = `${name} - ${qty} ක්`; soldProductsList.appendChild(li); });
+        const totalLi = document.createElement('li');
+        totalLi.style.fontWeight = '700'; totalLi.style.marginTop = '10px';
+        totalLi.textContent = `මුළු විකිණුනු ප්‍රමාණය: ${totalCount} ක්`;
+        soldProductsList.appendChild(totalLi);
+      }
+      soldProductsModal.style.display = 'flex';
     });
 
-    yearSelect.addEventListener('change', updateReport);
-    monthSelect.addEventListener('change', updateReport);
-    storeSelect.addEventListener('change', updateReport);
+    closeSoldModal.addEventListener('click', ()=>soldProductsModal.style.display='none');
 
     populateYears();
     populateMonths();
     populateStores();
-
     updateReport();
   </script>
 </body>
