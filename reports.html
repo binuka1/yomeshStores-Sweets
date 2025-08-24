@@ -365,7 +365,7 @@
 
       // Total items = sold items + current stock
 const stock = JSON.parse(localStorage.getItem('products') || '[]');
-let totalStockQty = stock.reduce((sum, p) => sum + (p.qty || 0), 0);
+let totalStockQty = stock.reduce((sum, p) => sum + (p.quantity || 0), 0);
 let totalSoldQty = filteredBills.reduce((sum, b) => sum + ((b.items||[]).reduce((s, i) => s + (i.qty||0), 0)), 0);
 document.getElementById('totalItemCount').textContent = totalSoldQty + totalStockQty;
 
