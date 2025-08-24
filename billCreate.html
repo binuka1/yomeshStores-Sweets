@@ -139,6 +139,10 @@ storeSelect.addEventListener('input',()=>{
     storeList.appendChild(opt);
   });
 
+    // Enable product and return fields
+  productSelect.disabled = !storeSelect.value;
+  returnSelect.disabled = !storeSelect.value;  
+
   const selected = stores.find(s=>(s.storeName||s.name)===storeSelect.value);
   productSelect.disabled = !selected;
   if(selected) productSelect.focus();
