@@ -144,7 +144,8 @@ function loadData(){
   storeSelect.innerHTML='<option value="">-- තෝරන්න --</option>';
   stores.forEach(s=>storeSelect.innerHTML+=`<option value="${s.id}">${s.storeName||s.name}</option>`);
   returnSelect.innerHTML='<option value="">-- තෝරන්න --</option>';
-  products.forEach(p=>returnSelect.innerHTML+=`<option value="${p.id}">${p.productName||p.name}</option>`);
+  products.forEach(p=>returnSelect.innerHTML+=`<option value="${p.id}">${p.productName||p.name} - (${p.quantity|| invalid })</option>`);
+
 }
 loadData();
 
@@ -153,7 +154,9 @@ storeSelect.addEventListener('change',()=>{
   const productList=document.getElementById('productList'); productList.innerHTML='';
   products.filter(p=>p.quantity>0).forEach(p=>{
     const opt=document.createElement('option');
-    opt.value=p.productName||p.name;
+    var x = p.productName||p.name ;
+    var y = p.quantity || NON ;
+    opt.value=x +" - ("+y+")";
     opt.dataset.id=p.id; opt.dataset.price=p.sellingPrice;
     productList.appendChild(opt);
   });
@@ -268,6 +271,7 @@ saveBillBtn.addEventListener('click',()=>{
     items:[...billItems],
     returns:[...returnItems],
     grossAmount:gross,
+    returnAmount:returns,
     netAmount:net,
     profit:finalProfit
   };
@@ -275,6 +279,8 @@ saveBillBtn.addEventListener('click',()=>{
   bills.push(bill);
   localStorage.setItem('bills',JSON.stringify(bills));
   alert('බිල්පත සුරක්ෂිතයි');
+
+  window.location.href = 'bill.html';
 
   billItems=[];returnItems=[];updateTables();resetInputs();resetReturnInputs();storeSelect.value='';
 });

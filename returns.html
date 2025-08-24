@@ -1,403 +1,146 @@
 <!DOCTYPE html>
 <html lang="si">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ආපසු අයිතම් ඉතිහාසය</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Return History</title>
   <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, sans-serif;
-      background: #f0f7ff;
-      margin: 0; padding: 20px;
-      color: #222;
-    }
-
-    .container {
-      max-width: 720px;
-      width: 90vw;
-      margin: 20px auto;
-      background: #fff;
-      border-radius: 16px;
-      padding: 20px;
-      box-shadow: 0 10px 40px rgba(0, 105, 192, 0.2);
-      overflow-x:hidden;
-      box-sizing: border-box;
-    }
-
-    .scroll{
-      max-width: 720px;
-      width: 90vw;
-      overflow-x:scroll;
-      box-sizing: border-box;
-    }
-
-    h1 {
-      color: #1565c0;
-      text-align: center;
-      margin-bottom: 25px;
-    }
-
-    .filters {
-      display: flex;
-      gap: 15px;
-      justify-content: center;
-      margin-bottom: 20px;
-      flex-wrap: wrap;
-    }
-
-    select {
-      padding: 10px 15px;
-      font-size: 1rem;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-      background: #f9fcff;
-      cursor: pointer;
-      min-width: 130px;
-      transition: 0.3s ease;
-    }
-    select:focus {
-      outline: none;
-      border-color: #2196f3;
-      box-shadow: 0 0 6px rgba(33,150,243,0.3);
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.95rem;
-      margin-bottom: 25px;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 1px 5px rgba(0,0,0,0.1);
-    }
-
-    th, td {
-      padding: 12px 10px;
-      border: 1px solid #e0e0e0;
-      text-align: center;
-      white-space: nowrap;
-    }
-
-    th {
-      background-color: #0288d1;
-      color: #fff;
-      font-weight: 600;
-    }
-
-    tr:nth-child(even) td {
-      background-color: #f9f9f9;
-    }
-
-    td.store-name {
-      max-width: 160px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      cursor: default;
-    }
-    td.store-name:hover {
-      white-space: normal;
-      background-color: #e3f2fd;
-    }
-
-    button.viewDetailsBtn {
-      background-color: #0288d1;
-      border: none;
-      color: white;
-      padding: 7px 14px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 0.9rem;
-      transition: background-color 0.3s ease;
-    }
-    button.viewDetailsBtn:hover {
-      background-color: #01579b;
-    }
-
-    /* Modal styles */
-    .modal {
-      display: none; 
-      position: fixed; 
-      z-index: 1000; 
-      padding-top: 80px; 
-      left: 0; top: 0; width: 100%; height: 100%; 
-      overflow: auto; 
-      background-color: rgba(0,0,0,0.5);
-    }
-
-    .modal-content {
-      background-color: #e3f2fd;
-      margin: auto;
-      padding: 20px;
-      border-radius: 16px;
-      width: 90%;
-      max-width: 600px;
-      box-shadow: 0 2px 12px rgba(3, 86, 167, 0.3);
-      position: relative;
-    }
-
-    .modal-header {
-      font-size: 1.3rem;
-      color: #01579b;
-      font-weight: 700;
-      margin-bottom: 15px;
-    }
-
-    .close-btn {
-      position: absolute;
-      top: 12px;
-      right: 20px;
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: #01579b;
-      cursor: pointer;
-      border: none;
-      background: transparent;
-    }
-
-    .modal table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.9rem;
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 1px 5px rgba(0,0,0,0.1);
-    }
-    .modal th, .modal td {
-      border: 1px solid #c8d8ff;
-      padding: 10px 8px;
-      text-align: center;
-      white-space: nowrap;
-    }
-    .modal th {
-      background-color: #1976d2;
-      color: white;
-      font-weight: 600;
-    }
-    .modal tr:nth-child(even) td {
-      background-color: #dbe9ff;
-    }
-
-    /* Summary for selected month */
-    .summary {
-      font-weight: 700;
-      font-size: 1.1rem;
-      color: #01579b;
-      margin-bottom: 10px;
-      text-align: center;
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-      .filters {
-        flex-direction: column;
-        align-items: center;
-      }
-      table, th, td {
-        font-size: 0.85rem;
-      }
-      td.store-name {
-        max-width: 110px;
-      }
-    }
+    body{font-family:'Segoe UI',sans-serif;background:#f4f9ff;margin:0;padding:20px}
+    h1{text-align:center;color:#1565c0}
+    table{width:100%;border-collapse:collapse;margin-top:20px}
+    th,td{padding:10px;border:1px solid #ddd;text-align:center}
+    th{background:#0288d1;color:white}
+    tr:hover{background:#e3f2fd}
+    #monthlyReturnSummary{margin-top:20px;font-weight:600;color:#01579b}
+    .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);justify-content:center;align-items:center}
+    .modal-content{background:#fff;padding:20px;border-radius:14px;width:95%;max-width:600px;overflow-x:auto}
+    .closeBtn{float:right;background:#e53935;color:#fff;border:none;padding:6px 12px;border-radius:6px;cursor:pointer}
+    @media(max-width:600px){.modal-content{width:95%}}
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <h1>🔄 ආපසු අයිතම් ඉතිහාසය</h1>
+<h1>ආපසු ගත් ඉතිහාසය</h1>
 
-    <div class="filters">
-      <select id="yearFilter" title="වසර තෝරන්න"></select>
-      <select id="monthFilter" title="මාසය තෝරන්න"></select>
-    </div>
+<label>අවුරුද්ද:</label>
+<input type="number" id="yearFilter" placeholder="2025">
+<label>මාසය:</label>
+<input type="number" id="monthFilter" min="1" max="12" placeholder="8">
+<button onclick="applyFilter()">Filter</button>
 
-    <div class="scroll">
-    <table id="returnsTable">
-      <thead>
-        <tr>
-          <th>කඩය</th>
-          <th>දිනය</th>
-          <th>ආපසු ලබාදුන් මුදල</th>
-          <th>විස්තර බලන්න</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
+<table>
+  <thead>
+    <tr>
+      <th>කඩය</th>
+      <th>දිනය</th>
+      <th>මුළු ආපසු මුදල</th>
+      <th>විස්තර</th>
+    </tr>
+  </thead>
+  <tbody id="returnsTableBody"></tbody>
+</table>
+
+<p id="monthlyReturnSummary"></p>
+
+<!-- Modal -->
+<div id="returnModal" class="modal">
+  <div class="modal-content">
+    <button class="closeBtn" onclick="document.getElementById('returnModal').style.display='none'">X</button>
+    <h3>Return Details</h3>
+    <table>
+      <tbody id="returnDetailBody"></tbody>
     </table>
-
   </div>
+</div>
 
-  <!-- Modal for return details -->
-  <div id="returnModal" class="modal">
-    <div class="modal-content">
-      <button class="close-btn" id="closeModalBtn">&times;</button>
-      <div class="modal-header">ආපසු අයිතම විස්තර</div>
-      <table>
-        <thead>
-          <tr>
-            <th>අයිතමය</th>
-            <th>වටිනාකම</th>
-          </tr>
-        </thead>
-        <tbody id="returnDetailBody"></tbody>
-      </table></div>
-    </div>
-    <div class="summary" id="monthlyReturnSummary"></div>
-  </div>
-  
+<script>
+const bills = JSON.parse(localStorage.getItem('bills') || '[]');
+const stores = JSON.parse(localStorage.getItem('stores') || '[]');
 
-  <script>
-    const returns = JSON.parse(localStorage.getItem('returns') || '[]');
-    const stores = JSON.parse(localStorage.getItem('stores') || '[]');
+function formatDate(d){
+  return new Date(d).toLocaleDateString('si-LK',{year:'numeric',month:'2-digit',day:'2-digit'});
+}
 
-    const yearFilter = document.getElementById('yearFilter');
-    const monthFilter = document.getElementById('monthFilter');
-    const returnsTableBody = document.querySelector('#returnsTable tbody');
-    const monthlyReturnSummary = document.getElementById('monthlyReturnSummary');
+// filter returns
+function filterReturns(year='',month=''){
+  return bills.filter(b=>{
+    const date=new Date(b.date);
+    return (!year || date.getFullYear()==year) &&
+           (!month || date.getMonth()+1==month) &&
+           (b.returns && b.returns.length>0);
+  });
+}
 
-    // Modal elements
-    const returnModal = document.getElementById('returnModal');
-    const returnDetailBody = document.getElementById('returnDetailBody');
-    const closeModalBtn = document.getElementById('closeModalBtn');
+// render main table in reverse order (last entry on top)
+function renderReturnList(year='',month=''){
+  const filtered=filterReturns(year,month).slice().reverse();
+  const tbody=document.getElementById('returnsTableBody');
+  tbody.innerHTML='';
+  if(filtered.length===0){
+    tbody.innerHTML='<tr><td colspan="4">දත්ත නොමැත</td></tr>';
+    document.getElementById('monthlyReturnSummary').textContent='';
+    return;
+  }
 
-    // Unique years from return dates
-    const uniqueYears = [...new Set(returns.map(r => new Date(r.date).getFullYear()))].sort((a,b) => b - a);
+  let monthlySum=0;
 
-    function populateYearFilter() {
-      yearFilter.innerHTML = '<option value="">-- වසර තෝරන්න --</option>';
-      uniqueYears.forEach(y => {
-        yearFilter.innerHTML += `<option value="${y}">${y}</option>`;
-      });
-    }
+  filtered.forEach(bill=>{
+    const store=stores.find(s=>s.id===bill.storeId);
+    const storeName=store?store.storeName||store.name:'නොදන්නා';
+    const totalReturn=bill.returns.reduce((a,r)=>a+(r.returnPrice||0),0);
+    monthlySum+=totalReturn;
 
-    function populateMonthFilter(selectedYear) {
-      const months = [
-        {val: 1, name: 'ජනවාරි'},
-        {val: 2, name: 'පෙබරවාරි'},
-        {val: 3, name: 'මාර්තු'},
-        {val: 4, name: 'අප්‍රේල්'},
-        {val: 5, name: 'මැයි'},
-        {val: 6, name: 'ජුනි'},
-        {val: 7, name: 'ජුලි'},
-        {val: 8, name: 'අගෝස්තු'},
-        {val: 9, name: 'සැප්තැම්බර්'},
-        {val: 10, name: 'ඔක්තෝබර්'},
-        {val: 11, name: 'නොවැම්බර්'},
-        {val: 12, name: 'දෙසැම්බර්'}
-      ];
-      monthFilter.innerHTML = '<option value="">-- මාසය තෝරන්න --</option>';
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td>${storeName}</td>
+      <td>${formatDate(bill.date)}</td>
+      <td>Rs. ${totalReturn.toFixed(2)}</td>
+      <td><button onclick="viewDetails('${bill.id}')">විස්තර</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
 
-      const filteredMonths = returns.filter(r => {
-        const d = new Date(r.date);
-        return d.getFullYear() === Number(selectedYear);
-      });
+  document.getElementById('monthlyReturnSummary').textContent =
+    `තෝරාගත් මාසයේ ආපසු මුදල: Rs. ${monthlySum.toFixed(2)}`;
+}
 
-      const uniqueMonths = [...new Set(filteredMonths.map(r => new Date(r.date).getMonth() +1 ))];
+// horizontal flip modal
+function viewDetails(billId){
+  const bill=bills.find(b=>b.id===billId);
+  if(!bill)return;
+  const body=document.getElementById('returnDetailBody');
+  body.innerHTML='';
 
-      months.forEach(m => {
-        if(selectedYear === '' || uniqueMonths.includes(m.val)){
-          monthFilter.innerHTML += `<option value="${m.val}">${m.name}</option>`;
-        }
-      });
-    }
+  const rowItem = document.createElement('tr');
+  const rowPrice = document.createElement('tr');
+  const rowPercent = document.createElement('tr');
 
-    function formatDate(iso) {
-      const d = new Date(iso);
-      return d.toLocaleDateString('si-LK', {
-        year: 'numeric', month: 'short', day: 'numeric',
-        hour: '2-digit', minute: '2-digit'
-      });
-    }
+  rowItem.innerHTML = `<th>අයිතමය</th>`;
+  rowPrice.innerHTML = `<th>මුදල</th>`;
+  rowPercent.innerHTML = `<th>%</th>`;
 
-    function filterReturns(year, month) {
-      return returns.filter(r => {
-        const d = new Date(r.date);
-        if(year && d.getFullYear() !== Number(year)) return false;
-        if(month && (d.getMonth() + 1) !== Number(month)) return false;
-        return true;
-      });
-    }
+  bill.returns.forEach(r=>{
+    rowItem.innerHTML += `<td>${r.name}</td>`;
+    rowPrice.innerHTML += `<td>Rs. ${(r.returnPrice||0).toFixed(2)}</td>`;
+    rowPercent.innerHTML += `<td>${(r.percent*100).toFixed(0)}%</td>`;
+  });
 
-    function renderReturnList(year = '', month = '') {
-      const filtered = filterReturns(year, month);
+  body.appendChild(rowItem);
+  body.appendChild(rowPrice);
+  body.appendChild(rowPercent);
 
-      returnsTableBody.innerHTML = '';
-      if(filtered.length === 0) {
-        returnsTableBody.innerHTML = `<tr><td colspan="4">දත්ත නොමැත</td></tr>`;
-        monthlyReturnSummary.textContent = '';
-        returnModal.style.display = 'none';
-        return;
-      }
+  document.getElementById('returnModal').style.display='flex';
+}
 
-      filtered.forEach(r => {
-        const store = stores.find(s => s.id === r.storeId);
-        const storeName = store ? (store.storeName || store.name || 'නොදන්නා') : 'නොදන්නා';
-        const totalReturn = r.items.reduce((acc, i) => acc + (i.returnPrice || 0), 0);
+function applyFilter(){
+  const y=document.getElementById('yearFilter').value;
+  const m=document.getElementById('monthFilter').value;
+  renderReturnList(y,m);
+}
 
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td class="store-name" title="${storeName}">${storeName}</td>
-          <td>${formatDate(r.date)}</td>
-          <td>Rs. ${totalReturn.toFixed(2)}</td>
-          <td><button class="viewDetailsBtn" data-id="${r.id}">විස්තර බලන්න</button></td>
-        `;
-        returnsTableBody.appendChild(tr);
-      });
+// initial load
+renderReturnList();
+</script>
 
-      const monthlySum = filtered.reduce((acc, r) => {
-        return acc + r.items.reduce((a, i) => a + (i.returnPrice || 0), 0);
-      }, 0);
-
-      monthlyReturnSummary.textContent = `තෝරාගත් මාසයේ ආපසු ලබාදුන් මුදල: Rs. ${monthlySum.toFixed(2)}`;
-    }
-
-    // Open modal with return details
-    returnsTableBody.addEventListener('click', e => {
-      if(e.target.classList.contains('viewDetailsBtn')) {
-        const returnId = e.target.getAttribute('data-id');
-        const ret = returns.find(r => r.id === returnId);
-        if(!ret) return;
-
-        returnDetailBody.innerHTML = '';
-
-        ret.items.forEach(item => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>${item.name}</td>
-            <td>Rs. ${(item.returnPrice || 0).toFixed(2)}</td>
-          `;
-          returnDetailBody.appendChild(tr);
-        });
-
-        returnModal.style.display = 'block';
-      }
-    });
-
-    // Close modal on close button click
-    closeModalBtn.addEventListener('click', () => {
-      returnModal.style.display = 'none';
-    });
-
-    // Close modal on clicking outside modal content
-    window.addEventListener('click', e => {
-      if(e.target === returnModal) {
-        returnModal.style.display = 'none';
-      }
-    });
-
-    // Initial
-    populateYearFilter();
-    populateMonthFilter('');
-    renderReturnList();
-
-    yearFilter.addEventListener('change', () => {
-      const y = yearFilter.value;
-      populateMonthFilter(y);
-      renderReturnList(y, '');
-    });
-    monthFilter.addEventListener('change', () => {
-      renderReturnList(yearFilter.value, monthFilter.value);
-    });
-  </script>
 </body>
 </html>

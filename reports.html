@@ -213,6 +213,16 @@
         <h3>මුළු ආපසු ලැබීම් (ගණන)</h3>
         <p id="totalReturns">0</p>
       </div>
+      <div class="card">
+        <h3>මුළු ආපසු ලැබීම් (මුදල)</h3>
+        <p id="totalReturnAmount">Rs. 0.00</p>
+      </div>
+
+      <div class="card">
+  <h3>මුළු අයිතම ගණන (විකුණු + ඉතිරි)</h3>
+  <p id="totalItemCount">0</p>
+</div>
+
     </div>
 
     <canvas id="salesChart"></canvas>
@@ -243,6 +253,7 @@
     const totalSalesEl = document.getElementById('totalSales');
     const totalExpensesEl = document.getElementById('totalExpenses');
     const totalReturnsEl = document.getElementById('totalReturns');
+    const totalReturnAmountEl = document.getElementById('totalReturnAmount');
     const clearFiltersBtn = document.getElementById('clearFiltersBtn');
     const salesChartCtx = document.getElementById('salesChart').getContext('2d');
     const topItemsCtx = document.getElementById('topItemsChart').getContext('2d');
@@ -319,6 +330,10 @@
       totalExpensesEl.textContent = formatCurrency(totalExpenses);
       totalReturnsEl.textContent = filteredReturns.length;
 
+      // අලුත් card එක update
+      const totalReturnAmount = filteredReturns.reduce((sum,r)=>sum + (r.returnPrice||0),0);
+      totalReturnAmountEl.textContent = formatCurrency(totalReturnAmount);
+
       // Top items sold chart
       const itemMap = {};
       filteredBills.forEach(b=> (b.items||[]).forEach(i=> { itemMap[i.name]=(itemMap[i.name]||0)+i.qty } ));
@@ -347,6 +362,13 @@
         data:{labels:days,datasets:[{label:'දිනපතා විකුණුම්',data:values,borderColor:'#2563eb',backgroundColor:'rgba(37, 99, 235, 0.3)',fill:true,tension:0.3,pointRadius:5,pointHoverRadius:7}]},
         options:{responsive:true,plugins:{legend:{display:true}},interaction:{mode:'nearest',axis:'x',intersect:false},animation:{duration:1200,easing:'easeOutQuart'}}
       });
+
+      // Total items = sold items + current stock
+const stock = JSON.parse(localStorage.getItem('products') || '[]');
+let totalStockQty = stock.reduce((sum, p) => sum + (p.qty || 0), 0);
+let totalSoldQty = filteredBills.reduce((sum, b) => sum + ((b.items||[]).reduce((s, i) => s + (i.qty||0), 0)), 0);
+document.getElementById('totalItemCount').textContent = totalSoldQty + totalStockQty;
+
 
       // Return items chart
       const returnItemsMap = {};
