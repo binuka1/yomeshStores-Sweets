@@ -3,112 +3,190 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Login - Smart Billing System</title>
-  <link rel="stylesheet" href="css/style.css" />
+  <title>Login - Yomesh Stores</title>
   <style>
+    * { box-sizing: border-box; margin:0; padding:0; }
+
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #e3f2fd;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background: linear-gradient(135deg,#e0f7fa,#ffffff);
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      margin-top: 20;
+      min-height: 100vh;
+      color: #222;
+      padding: 10px;
     }
 
     .login-container {
-      background: white;
-      padding: 40px;
-      border-radius: 16px;
-      box-shadow: 0 8px 30px rgba(0,105,192,0.2);
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(15px);
+      padding: 35px 25px;
+      border-radius: 20px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.15);
       max-width: 400px;
-      width: 90%;
-      box-sizing: border-box;
+      width: 100%;
+      text-align: left;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .login-container:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 18px 35px rgba(0,0,0,0.18);
     }
 
     h1 {
       text-align: center;
-      color: #1565c0;
-      margin-bottom: 30px;
+      margin-bottom: 8px;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #0077b6;
+    }
+
+    .tagline {
+      text-align: center;
+      font-size: 1rem;
+      color: #555;
+      margin-bottom: 25px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .form-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
     }
 
     label {
-      display: block;
-      margin-bottom: 8px;
+      flex: 1;
+      font-weight: 600;
+      font-size: 0.95rem;
       color: #333;
-      font-weight: 500;
     }
 
     input {
-      width: 100%;
+      flex: 2;
       padding: 12px 14px;
-      margin-bottom: 20px;
-      border: 1px solid #ccc;
-      border-radius: 10px;
+      border: 1.5px solid #ccc;
+      border-radius: 12px;
       font-size: 1rem;
-      box-sizing: border-box;
-      transition: border-color 0.3s;
+      outline: none;
+      background-color: #f9f9f9;
+      transition: border-color 0.3s, box-shadow 0.3s;
     }
 
+    input::placeholder { color: #aaa; font-size: 0.95rem; }
+
     input:focus {
-      border-color: #2196f3;
-      outline: none;
+      border-color: #1e88e5;
+      box-shadow: 0 0 10px rgba(30,136,229,0.4);
+      background-color: #fff;
     }
 
     .primary {
       width: 100%;
-      padding: 12px;
-      background: #0288d1;
+      padding: 14px;
+      background: linear-gradient(90deg, #00b4d8, #0077b6);
       color: white;
-      font-size: 1rem;
+      font-size: 1.05rem;
+      font-weight: 600;
       border: none;
-      border-radius: 10px;
+      border-radius: 14px;
       cursor: pointer;
-      transition: background-color 0.3s;
+      position: relative;
+      transition: transform 0.2s, box-shadow 0.3s;
+      margin-top: 10px;
     }
 
-    .primary:hover {
-      background-color: #01579b;
+    .primary:hover:not(:disabled) {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.25);
     }
+
+    .primary:disabled { opacity: 0.7; cursor: not-allowed; }
+
+    .spinner {
+      border: 3px solid rgba(255,255,255,0.3);
+      border-top: 3px solid white;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      animation: spin 0.8s linear infinite;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+
+    @keyframes spin { 0% { transform: rotate(0deg);} 100% { transform: rotate(360deg);} }
 
     .error-msg {
-      color: red;
+      color: #d32f2f;
       font-size: 0.9rem;
+      min-height: 20px;
+      margin-top: 8px;
       text-align: center;
-      margin-top: 10px;
+      transition: all 0.3s;
+    }
+
+    @media(max-width:500px){
+      .login-container {
+        padding: 25px 20px;
+      }
+      h1 { font-size: 1.6rem; }
+      .primary { font-size: 1rem; padding: 12px; }
+      .form-row { flex-direction: column; align-items: stretch; gap: 8px; }
+      input { flex: unset; width: 100%; }
+      label { font-size: 0.9rem; }
     }
   </style>
 </head>
 <body>
   <div class="login-container">
-    <h1>Smart Billing System - පිවිසුම</h1>
+    <h1>🛒 Yomesh Stores</h1>
+    <p class="tagline">Smart Billing System - පිවිසුම</p>
     <form id="loginForm">
-      <label for="username">පරිශීලක නාමය</label>
-      <input type="text" id="username" name="username" placeholder="පරිශීලක නාමය ඇතුළත් කරන්න" required />
-
-      <label for="password">මුරපදය</label>
-      <input type="password" id="password" name="password" placeholder="මුරපදය ඇතුළත් කරන්න" required />
-
-      <button type="submit" class="primary">පිවිසෙන්න</button>
+      <div class="form-row">
+        <label for="username">පරිශීලක නාමය</label>
+        <input type="text" id="username" name="username" placeholder="පරිශීලක නාමය ඇතුළත් කරන්න" required />
+      </div>
+      <div class="form-row">
+        <label for="password">මුරපදය</label>
+        <input type="password" id="password" name="password" placeholder="මුරපදය ඇතුළත් කරන්න" required />
+      </div>
+      <button type="submit" class="primary" id="loginBtn">🚀 පිවිසෙන්න</button>
       <p id="loginError" class="error-msg"></p>
     </form>
   </div>
 
   <script>
-    document.getElementById('loginForm').addEventListener('submit', function(e) {
+    const loginForm = document.getElementById('loginForm');
+    loginForm.addEventListener('submit', function(e){
       e.preventDefault();
-
       const username = document.getElementById('username').value.trim();
       const password = document.getElementById('password').value.trim();
       const errorMsg = document.getElementById('loginError');
+      const loginBtn = document.getElementById('loginBtn');
 
-      // Simple localStorage login logic (replace with real logic later)
-      if (username === 'admin' && password === '1234') {
-        localStorage.setItem('loggedIn', 'true');
-        window.location.href = 'home.html';
-      } else {
-        errorMsg.textContent = 'වැරදි පරිශීලක නාමය හෝ මුරපදය';
-      }
+      loginBtn.innerHTML = '<span class="spinner"></span> Loading...';
+      loginBtn.disabled = true;
+
+      setTimeout(() => {
+        if(username === 'admin' && password === '1234'){
+          localStorage.setItem('loggedIn', 'true');
+          localStorage.setItem('loggedInUser', JSON.stringify({ username }));
+          window.location.href = 'home.html';
+        } else {
+          errorMsg.textContent = '❌ වැරදි පරිශීලක නාමය හෝ මුරපදය';
+          loginBtn.innerHTML = '🚀 පිවිසෙන්න';
+          loginBtn.disabled = false;
+        }
+      }, 800);
     });
   </script>
 </body>
