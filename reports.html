@@ -86,16 +86,32 @@
       box-shadow: 0 0 12px #dc2626;
     }
 
+    /* Summary cards horizontal scroll */
     .summary {
       display: flex;
-      flex-wrap: wrap;
       gap: 20px;
-      justify-content: space-around;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      scroll-behavior: smooth;
       margin-bottom: 50px;
     }
 
+    .summary::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    .summary::-webkit-scrollbar-thumb {
+      background-color: #3b82f6;
+      border-radius: 10px;
+    }
+
+    .summary::-webkit-scrollbar-track {
+      background: #e5e7eb;
+      border-radius: 10px;
+    }
+
     .card {
-      flex: 1 1 220px;
+      flex: 0 0 220px;
       background: #e0e7ff;
       padding: 20px 15px;
       border-radius: 16px;
@@ -103,7 +119,6 @@
       box-shadow: 0 6px 15px rgba(30,58,138,0.12);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
       user-select: none;
-      min-width: 0;
     }
 
     .card:hover {
@@ -174,11 +189,11 @@
       body { padding: 15px 10px; }
       .container { padding: 20px 15px; max-width: 100%; }
       .filters select, .filters button { flex: 1 1 100%; min-width: auto; }
-      .summary { flex-direction: column; gap: 15px; }
-      .card { flex: 1 1 100%; padding: 15px 10px; }
+      .summary { gap: 15px; }
+      .card { flex: 0 0 180px; padding: 15px 10px; }
       h1 { font-size: 2rem; }
-      .card h3 { font-size: 1.1rem; }
-      .card p { font-size: 1.6rem; }
+      .card h3 { font-size: 1rem; }
+      .card p { font-size: 1.5rem; }
     }
   </style>
 </head>
@@ -201,6 +216,10 @@
         <h3>මුළු ලාභය (ලාභය - වියදම්)</h3>
         <p id="netProfit">Rs. 0.00</p>
       </div>
+       <div class="card">
+        <h3>දවසේ ලාභය</h3>
+        <p id="todayProfit">Rs. 0.00</p>
+      </div>
       <div class="card">
         <h3>මුළු විකුණුම්</h3>
         <p id="totalSales">Rs. 0.00</p>
@@ -217,12 +236,11 @@
         <h3>මුළු ආපසු ලැබීම් (මුදල)</h3>
         <p id="totalReturnAmount">Rs. 0.00</p>
       </div>
-
       <div class="card">
-  <h3>මුළු අයිතම ගණන (විකුණු + ඉතිරි)</h3>
-  <p id="totalItemCount">0</p>
-</div>
-
+        <h3>මුළු අයිතම ගණන (විකුණු + ඉතිරි)</h3>
+        <p id="totalItemCount">0</p>
+      </div>
+     
     </div>
 
     <canvas id="salesChart"></canvas>
@@ -254,6 +272,8 @@
     const totalExpensesEl = document.getElementById('totalExpenses');
     const totalReturnsEl = document.getElementById('totalReturns');
     const totalReturnAmountEl = document.getElementById('totalReturnAmount');
+    const totalItemCountEl = document.getElementById('totalItemCount');
+    const todayProfitEl = document.getElementById('todayProfit');
     const clearFiltersBtn = document.getElementById('clearFiltersBtn');
     const salesChartCtx = document.getElementById('salesChart').getContext('2d');
     const topItemsCtx = document.getElementById('topItemsChart').getContext('2d');
@@ -266,10 +286,7 @@
     let salesChart, topItemsChart, returnItemsChart;
 
     function populateYears() {
-      const yearsSet = new Set([
-        ...bills.map(b => new Date(b.date).getFullYear()),
-        ...expenses.map(e => new Date(e.date).getFullYear())
-      ]);
+      const yearsSet = new Set([...bills.map(b => new Date(b.date).getFullYear()), ...expenses.map(e => new Date(e.date).getFullYear())]);
       const years = [...yearsSet].sort((a,b)=>a-b);
       yearSelect.innerHTML = '<option value="">-- වසර තෝරන්න --</option>';
       years.forEach(y=>yearSelect.innerHTML+=`<option value="${y}">${y}</option>`);
@@ -330,11 +347,18 @@
       totalExpensesEl.textContent = formatCurrency(totalExpenses);
       totalReturnsEl.textContent = filteredReturns.length;
 
-      // අලුත් card එක update
       const totalReturnAmount = filteredReturns.reduce((sum,r)=>sum + (r.returnPrice||0),0);
       totalReturnAmountEl.textContent = formatCurrency(totalReturnAmount);
 
-      // Top items sold chart
+      // Total items = sold items + current stock
+      const stock = JSON.parse(localStorage.getItem('products') || '[]');
+      let totalStockQty = stock.reduce((sum, p) => sum + (p.quantity || 0), 0);
+      let totalSoldQty = filteredBills.reduce((sum, b) => sum + ((b.items||[]).reduce((s, i) => s + (i.qty||0), 0)), 0);
+      totalItemCountEl.textContent = totalSoldQty + totalStockQty;
+
+      updateTodayProfit();
+
+      // Top items chart
       const itemMap = {};
       filteredBills.forEach(b=> (b.items||[]).forEach(i=> { itemMap[i.name]=(itemMap[i.name]||0)+i.qty } ));
       const itemNames = Object.keys(itemMap);
@@ -363,13 +387,6 @@
         options:{responsive:true,plugins:{legend:{display:true}},interaction:{mode:'nearest',axis:'x',intersect:false},animation:{duration:1200,easing:'easeOutQuart'}}
       });
 
-      // Total items = sold items + current stock
-const stock = JSON.parse(localStorage.getItem('products') || '[]');
-let totalStockQty = stock.reduce((sum, p) => sum + (p.quantity || 0), 0);
-let totalSoldQty = filteredBills.reduce((sum, b) => sum + ((b.items||[]).reduce((s, i) => s + (i.qty||0), 0)), 0);
-document.getElementById('totalItemCount').textContent = totalSoldQty + totalStockQty;
-
-
       // Return items chart
       const returnItemsMap = {};
       filteredReturns.forEach(r=>{
@@ -387,32 +404,47 @@ document.getElementById('totalItemCount').textContent = totalSoldQty + totalStoc
       });
     }
 
-    clearFiltersBtn.addEventListener('click',()=>{ yearSelect.value=''; monthSelect.value=''; storeSelect.value=''; updateReport(); });
-    yearSelect.addEventListener('change',updateReport);
-    monthSelect.addEventListener('change',updateReport);
-    storeSelect.addEventListener('change',updateReport);
+    function updateTodayProfit() {
+      const today = new Date();
+      const todayBills = bills.filter(b => {
+        const d = new Date(b.date);
+        return d.getFullYear() === today.getFullYear() &&
+               d.getMonth() === today.getMonth() &&
+               d.getDate() === today.getDate();
+      });
 
-    // Sold Products Popup
-    showSoldBtn.addEventListener('click', () => {
-      const { filteredBills } = filterData();
-      const productMap = {};
-      let totalCount = 0;
-      filteredBills.forEach(b => (b.items || []).forEach(i => { productMap[i.name] = (productMap[i.name] || 0) + i.qty; totalCount += i.qty; }));
+      const todayExpenses = expenses.filter(e => {
+        const d = new Date(e.date);
+        return d.getFullYear() === today.getFullYear() &&
+               d.getMonth() === today.getMonth() &&
+               d.getDate() === today.getDate();
+      });
 
-      soldProductsList.innerHTML = '';
-      if(Object.keys(productMap).length === 0) soldProductsList.innerHTML = '<li>කිසිම අයිතමයක් නොමැත</li>';
-      else {
-        Object.entries(productMap).forEach(([name, qty]) => { const li = document.createElement('li'); li.textContent = `${name} - ${qty} ක්`; soldProductsList.appendChild(li); });
-        const totalLi = document.createElement('li');
-        totalLi.style.fontWeight = '700'; totalLi.style.marginTop = '10px';
-        totalLi.textContent = `මුළු විකිණුනු ප්‍රමාණය: ${totalCount} ක්`;
-        soldProductsList.appendChild(totalLi);
-      }
-      soldProductsModal.style.display = 'flex';
+      const totalProfitFromBills = todayBills.reduce((sum,b)=>sum+(b.profit||0),0);
+      const totalExpensesToday = todayExpenses.reduce((sum,e)=>sum+parseFloat(e.cost||0),0);
+      const todayProfit = totalProfitFromBills - totalExpensesToday;
+
+      todayProfitEl.textContent = formatCurrency(todayProfit);
+    }
+
+    // Filters events
+    yearSelect.addEventListener('change', updateReport);
+    monthSelect.addEventListener('change', updateReport);
+    storeSelect.addEventListener('change', updateReport);
+    clearFiltersBtn.addEventListener('click', ()=>{
+      yearSelect.value=''; monthSelect.value=''; storeSelect.value='';
+      updateReport();
     });
 
+    // Sold products modal
+    showSoldBtn.addEventListener('click', ()=>{
+      const soldItems = bills.flatMap(b=>b.items||[]).map(i=>`${i.name} x${i.qty}`);
+      soldProductsList.innerHTML = soldItems.map(s=>`<li>${s}</li>`).join('');
+      soldProductsModal.style.display='flex';
+    });
     closeSoldModal.addEventListener('click', ()=>soldProductsModal.style.display='none');
 
+    // Initial populate
     populateYears();
     populateMonths();
     populateStores();
