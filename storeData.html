@@ -36,7 +36,7 @@ input[type=text]:focus, input[type=tel]:focus, select:focus { outline:none; bord
 .store-card:hover { transform:translateY(-3px); box-shadow:0 10px 25px rgb(30 136 229 / 15%);}
 .store-info { display:flex; flex-direction:column; gap:6px;}
 .store-name { font-weight:700; font-size:1.1rem; color:#000; }
-.store-phone { font-size:0.95rem; color:#555; margin-top:4px}
+.store-phone { font-size:0.95rem; color:#555; margin-top:4px; cursor:pointer; text-decoration:underline; }
 
 /* Type Tag in Corner with colors */
 .store-type-tag { position:absolute; top:12px; right:12px; padding:6px 12px; border-radius:12px; font-size:0.85rem; font-weight:700; color:rgb(45, 45, 45); box-shadow:0 2px 6px rgb(0 0 0 / 20%);border: 1px solid black;}
@@ -93,7 +93,6 @@ input[type=text]:focus, input[type=tel]:focus, select:focus { outline:none; bord
 <section class="product-list-section">
 <h2>කඩේ ලැයිස්තුව</h2>
 
-<!-- Filter Buttons -->
 <div class="filter-container" id="typeFilter">
   <button class="active" data-type="All">සියල්ල</button>
   <button data-type="Thoga">තොග</button>
@@ -101,7 +100,6 @@ input[type=text]:focus, input[type=tel]:focus, select:focus { outline:none; bord
   <button data-type="Canteen">Canteen</button>
 </div>
 
-<!-- Search Bar -->
 <input type="text" id="searchInput" placeholder="කඩේ නම අනුව සොයන්න...">
 
 <div class="store-card-list" id="storeCardList"></div>
@@ -181,15 +179,13 @@ function renderStores(){
     card.innerHTML = `
       <div class="store-info">
         <span class="store-name">${store.storeName}</span>
-        <span class="store-phone">${store.storePhone||'-'}</span>
+        <a class="store-phone" href="tel:${store.storePhone||''}">${store.storePhone||'-'}</a>
       </div>
       <div class="store-actions">
         <button class="action-btn" style="background:#43a047;" onclick="openEditModal(${originalIndex})">සකසන්න</button>
         <button class="action-btn" style="background:#e53935;" onclick="deleteStore(${originalIndex})">මකන්න</button>
       </div>
-      <span class="store-type-tag type-${store.storeType}">
-        ${store.storeType==='Thoga'?'Thoga':store.storeType==='Sillara'?'Sillara':'canteen'}
-      </span>
+      <span class="store-type-tag type-${store.storeType}">${store.storeType==='Thoga'?'Thoga':store.storeType==='Sillara'?'Sillara':'Canteen'}</span>
     `;
     storeCardList.appendChild(card);
   });
