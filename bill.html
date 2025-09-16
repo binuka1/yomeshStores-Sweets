@@ -111,7 +111,7 @@
       border-top: 1px dashed #000;
       padding-top: 10px;
       font-size: clamp(16px, 5vw, 22px);
-      font-weight: bold;
+      font-weight: 400;
       line-height: 1.6;
     }
 
@@ -119,9 +119,10 @@
     .footer {
       text-align: center;
       margin-top: 12px;
-      font-size: clamp(15px, 4.8vw, 20px);
+      font-size: 20px;
+      font-weight: 1000;
       border-top: 1px solid #000;
-      padding-top: 6px;
+      padding-top: 9px;
     }
 
     /* Print styles */
@@ -159,11 +160,13 @@
       }
 
       .totals {
-        font-size: 19px;
+        font-size: 21px;
+        font-weight: 500;
       }
 
       .footer {
-        font-size: 13px;
+        font-size: 15px;
+        padding-top: 8px;
       }
     }
   </style>
@@ -253,8 +256,9 @@
     // Totals
     document.getElementById('billTotals').innerHTML = `
       මුළු මුදල: Rs. ${latest.grossAmount.toFixed(2)}<br>
-      ආපසු වටිනාකම: Rs. ${latest.returnAmount.toFixed(2)}<br>
-      ගෙවිය යුතු මුදල: Rs. ${latest.netAmount.toFixed(2)}
+      රිටන් අයිතම මිල: Rs. ${latest.returnAmount.toFixed(2)}
+      <hr width="60%">
+      <p style="font-size:26px; text-align:center; margin-top:0px; padding-top:0px; font-weight:800;">ගෙවිය යුතු මුදල: Rs. ${latest.netAmount.toFixed(2)}</p>
     `;
   }
 </script>
