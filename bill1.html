@@ -258,10 +258,11 @@ const latest = bills.find(b => b.id === selectedBillId);
       මුළු මුදල: Rs. ${latest.grossAmount.toFixed(2)}<br>
       රිටන් අයිතම මිල: Rs. ${latest.returnAmount.toFixed(2)}
       <hr width="60%">
-      <p style="font-size:26px; text-align:center; margin-top:0px; padding-top:0px; font-weight:800;">ගෙවිය යුතු මුදල: Rs. ${latest.netAmount.toFixed(2)}</p>
+      <p style="font-size:26px; text-align:center; margin-top:0px; padding-top:0px; font-weight:800;">ගෙවිය යුතු මුදල: <br>Rs. ${latest.netAmount.toFixed(2)}</p>
     `;
   }
 </script>
 
 </body>
 </html>
+
